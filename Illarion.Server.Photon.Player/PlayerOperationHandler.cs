@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Illarion.Net.Common;
+using Illarion.Server.Persistence.Server;
+using Microsoft.Extensions.DependencyInjection;
 using Photon.SocketServer;
 
 namespace Illarion.Server.Photon
@@ -12,7 +14,14 @@ namespace Illarion.Server.Photon
   {
     private readonly IServiceProvider _services;
 
-    public PlayerOperationHandler(IServiceProvider services) : base(services) => _services = services ?? throw new ArgumentNullException(nameof(services));
+    private readonly IWorldManager _worldManager;
+
+    public PlayerOperationHandler(IServiceProvider services) : base(services)
+    {
+      _services = services ?? throw new ArgumentNullException(nameof(services));
+      _worldManager = _services.GetRequiredService<IWorldManager>();
+    }
+    
 
     protected override void OnDisconnect(PlayerPeerBase peer)
     {
@@ -26,6 +35,7 @@ namespace Illarion.Server.Photon
       switch ((PlayerOperationCode)operationRequest.OperationCode)
       {
         case PlayerOperationCode.LoadingReady:
+          _worldManager.GetWorld(0).CreateNewCharacter(); // TODO: Character Callback
           break;
         case PlayerOperationCode.LogoutPlayer:
           break;

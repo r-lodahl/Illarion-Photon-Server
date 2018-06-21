@@ -63,10 +63,9 @@ namespace Illarion.Server.Photon
       if (operation.IsValid)
       {
         Account matchingAccount = _services.GetRequiredService<AccountsContext>().Accounts.
-          Where(a => a.AccountName.Equals(operation.AccountName, StringComparison.Ordinal)).
-          FirstOrDefault();
+          FirstOrDefault(a => a.AccountName.Equals(operation.AccountName, StringComparison.Ordinal));
 
-        if ((matchingAccount != null) && (PasswordHashing.VerifyPasswordHash(operation.Password, matchingAccount.Password)))
+        if (matchingAccount != null && PasswordHashing.VerifyPasswordHash(operation.Password, matchingAccount.Password))
         {
           peer.Account = matchingAccount;
           peer.SetCurrentOperationHandler(_services.GetRequiredService<IAccountOperationHandler>());

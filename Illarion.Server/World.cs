@@ -58,4 +58,3 @@ namespace Illarion.Server
       return checkedCharacter;
     }
   }
-}

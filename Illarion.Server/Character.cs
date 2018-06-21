@@ -20,10 +20,7 @@ namespace Illarion.Server
     public ICharacterCallback Callback { get; internal set; }
     IMapSubscription IMapSubscriber.Subscription { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-    internal Character(World world)
-    {
-      World = world ?? throw new ArgumentNullException(nameof(world));
-    }
+    internal Character(World world) => World = world ?? throw new ArgumentNullException(nameof(world));
 
     bool ICharacterController.UpdateMovement(Vector3 location, Vector3 velocity, Vector3 facing)
     {

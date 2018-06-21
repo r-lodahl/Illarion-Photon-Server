@@ -72,8 +72,8 @@ namespace Illarion.Server.Photon
       if (operation.IsValid)
       {
         Character matchingCharacter = _services.GetRequiredService<ServerContext>().Characters.
-          Where(c => c.AccountId == peer.Account.AccountId && c.CharacterId == operation.CharacterId).
-          FirstOrDefault();
+          FirstOrDefault(c => c.AccountId == peer.Account.AccountId && c.CharacterId == operation.CharacterId);
+
         if (matchingCharacter != null)
         {
           return GetReponseForCharacter(operationRequest.OperationCode, matchingCharacter);
@@ -108,15 +108,15 @@ namespace Illarion.Server.Photon
       if (operation.IsValid)
       {
         Character matchingCharacter = _services.GetRequiredService<ServerContext>().Characters.
-          Where(c => c.AccountId == peer.Account.AccountId && c.CharacterId == operation.CharacterId).
-          FirstOrDefault();
+          FirstOrDefault(c => c.AccountId == peer.Account.AccountId && c.CharacterId == operation.CharacterId);
+
         if (matchingCharacter != null)
         {
           switch (matchingCharacter.Status)
           {
             case CharacterStatus.Default:
               peer.Character = matchingCharacter;
-              // TODO: Spawn the character in the world
+              peer.SetCurrentOperationHandler(_services.GetRequiredService<IPlayerOperationHandler>());
               return new OperationResponse(operationRequest.OperationCode) { ReturnCode = (byte)LoginCharacterOperationReturnCode.Success };
             case CharacterStatus.Blocked:
               return new OperationResponse(operationRequest.OperationCode) { ReturnCode = (byte)LoginCharacterOperationReturnCode.Blocked };
