@@ -1,17 +1,29 @@
 using System;
+using System.Collections.Immutable;
 using System.Numerics;
 
 namespace Illarion.Server
 {
   internal class SingleSectorMap : IMap
   {
+    private ImmutableList<IMapSubscriber> _subscriberList;
+
     IChatChannel IMap.GetChatChannel(MapChatChannelType channelType) => null;
 
     IMapSubscription IMap.Subscribe(IMapSubscriber subscriber)
     {
       if (subscriber == null) throw new ArgumentNullException(nameof(subscriber));
 
+      _subscriberList.Add(subscriber);
+
       return new Subscription(this, subscriber);
+    }
+
+    public SingleSectorMap() => _subscriberList = ImmutableList<IMapSubscriber>.Empty;
+
+    void UpdateSubscribers()
+    {
+
     }
 
     private sealed class Subscription : IMapSubscription
@@ -27,6 +39,7 @@ namespace Illarion.Server
 
       void IMapSubscription.UpdatePosition(Vector3 position)
       {
+        //TODO: Update character position and inform the client
       }
 
       #region IDisposable Support

@@ -11,6 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
       serviceCollection.AddSingleton<IWorldManager>(p => new WorldManager(p));
       serviceCollection.AddSingleton<IMapFactory>(p => new MapFactory());
+      serviceCollection.AddSingleton<IPlayerFactory>(p => new PlayerFactory());
 
       return serviceCollection;
     }

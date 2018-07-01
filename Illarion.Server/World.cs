@@ -51,10 +51,12 @@ namespace Illarion.Server
     private Character GetOfThisWorld(ICharacter character)
     {
       if (character == null) throw new ArgumentNullException(nameof(character));
-      if (!(character is Character checkedCharacter) || checkedCharacter.World != this)
+      if (!( character is Character checkedCharacter ) || checkedCharacter.World != this)
       {
         throw new ArgumentException("The character instance was not created for this world.", nameof(character));
       }
+
       return checkedCharacter;
     }
   }
+}

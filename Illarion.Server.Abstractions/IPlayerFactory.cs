@@ -6,6 +6,6 @@ namespace Illarion.Server
 {
     public interface IPlayerFactory
     {
-      ICharacter CreateDefaultCallbackCharacter();
+      ICharacterCallback DefaultCharacterCallback(ICharacter character);
     }
 }

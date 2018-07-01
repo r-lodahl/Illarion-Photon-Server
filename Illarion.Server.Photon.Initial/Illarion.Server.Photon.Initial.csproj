@@ -8,7 +8,11 @@
     <SignAssembly>true</SignAssembly>
     <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>../IllarionDevelopment.snk</AssemblyOriginatorKeyFile>
+  <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
 	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+	<ApplicationIcon />
+	<OutputType>Library</OutputType>
+	<StartupObject />
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(PHOTON_SERVER_SDK)' != ''">

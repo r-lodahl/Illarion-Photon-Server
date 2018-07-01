@@ -1,7 +1,10 @@
+using System;
+using System.Numerics;
+
 namespace Illarion.Server
 {
     internal class PlayerFactory : IPlayerFactory
     {
-      public ICharacter CreateDefaultCallbackCharacter() => throw new System.NotImplementedException();
+      public ICharacterCallback DefaultCharacterCallback(ICharacter character) => new DefaultCharacterCallback();
     }
 }

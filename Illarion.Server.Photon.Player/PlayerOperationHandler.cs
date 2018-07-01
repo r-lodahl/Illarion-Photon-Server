@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Illarion.Net.Common;
+using Illarion.Net.Common.Operations.Player;
 using Illarion.Server.Persistence.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Photon.SocketServer;
@@ -35,7 +37,7 @@ namespace Illarion.Server.Photon
       switch ((PlayerOperationCode)operationRequest.OperationCode)
       {
         case PlayerOperationCode.LoadingReady:
-          _worldManager.GetWorld(0).CreateNewCharacter(); // TODO: Character Callback
+            peer.CharacterController = _worldManager.GetWorld(0).CreateNewCharacter(x => _services.GetRequiredService<IPlayerFactory>().DefaultCharacterCallback(x));
           break;
         case PlayerOperationCode.LogoutPlayer:
           break;
@@ -46,10 +48,21 @@ namespace Illarion.Server.Photon
         case PlayerOperationCode.UpdateAppearance:
           break;
         case PlayerOperationCode.UpdateLocation:
+          OnPlayerUpdateLocation(peer, operationRequest);
           break;
       }
 
       return InvalidOperation(operationRequest);
     }
+
+    private void OnPlayerUpdateLocation(PlayerPeerBase peer, OperationRequest operationRequest)
+    {
+      peer.CharacterController.UpdateMovement(
+        (Vector3)operationRequest.Parameters[(byte)UpdateLocationOperationRequestParameterCode.Location],
+        (Vector3)operationRequest.Parameters[(byte)UpdateLocationOperationRequestParameterCode.Velocity],
+        (Vector3)operationRequest.Parameters[(byte)UpdateLocationOperationRequestParameterCode.LookAtDirection]
+      );
+    }
+
   }
 }

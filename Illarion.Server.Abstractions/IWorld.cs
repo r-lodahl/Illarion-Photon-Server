@@ -13,7 +13,7 @@ namespace Illarion.Server
     ICharacter CreateNewCharacter(Func<ICharacter, ICharacterCallback> callbackFactory);
 
     /// <summary>Add a character to this world. This causes the character instance to be spawned in the world.</summary>
-    /// <param name="character">The character to add. Has to be created using <see cref="CreateNewPlayer()"/></param>
+    /// <param name="character">The character to add. Has to be created using <see cref="CreateNewCharacter"/></param>
     /// <exception cref="ArgumentNullException"><paramref name="character"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentException">
     /// <paramref name="character"/> was not created for this <see cref="IWorld"/>.

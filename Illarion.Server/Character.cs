@@ -9,7 +9,7 @@ namespace Illarion.Server
 {
   internal sealed class Character : ICharacter, IMapSubscriber
   {
-    internal World World { get; }
+    internal IWorld World { get; }
 
     public Vector3 Location { get; set; }
 
@@ -18,9 +18,13 @@ namespace Illarion.Server
     public Vector3 FacingDirection { get; set; }
 
     public ICharacterCallback Callback { get; internal set; }
-    IMapSubscription IMapSubscriber.Subscription { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    IMapSubscription IMapSubscriber.Subscription { get; set; }
 
-    internal Character(World world) => World = world ?? throw new ArgumentNullException(nameof(world));
+    internal Character(IWorld world)
+    {
+      World = world ?? throw new ArgumentNullException(nameof(world));
+      ((IMapSubscriber)this).Subscription = world.Map.Subscribe(this);
+    } 
 
     bool ICharacterController.UpdateMovement(Vector3 location, Vector3 velocity, Vector3 facing)
     {

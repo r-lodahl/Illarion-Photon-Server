@@ -2,6 +2,7 @@ using System.Numerics;
 
 namespace Illarion.Server
 {
+  //TODO: If a player is a special instance of a character, why does ICharacter uses ICharacterController? Shouldnt it be IPlayer and IPlayerController resp.?
   /// <summary>
   /// A player is a special instance of a character in the game that is controlled remotely by a human.
   /// </summary>
