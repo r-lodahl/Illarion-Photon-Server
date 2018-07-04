@@ -46,6 +46,7 @@ namespace Illarion.Server.Photon
             .GetEventChannel(MapEventChannelType.Movement), peer);
           break;
         case PlayerOperationCode.LogoutPlayer:
+          OnPlayerLeaveMap(peer);
           break;
         case PlayerOperationCode.SendMessage:
           break;

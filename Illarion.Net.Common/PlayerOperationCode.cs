@@ -26,6 +26,7 @@ namespace Illarion.Net.Common
     /// <seealso cref="Operations.Player.UpdateLocationOperationReponseParameterCode"/>
     UpdateLocation,
 
+    //TODO: If not issued by the client, this command should only send data for those character whose values have changed since last time the message was sent
     /// <summary>
     /// This operation is actively send by the server and it contains location updates for every character presently
     /// monitored by the client receiving.
