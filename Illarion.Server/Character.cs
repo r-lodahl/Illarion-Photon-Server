@@ -32,6 +32,12 @@ namespace Illarion.Server
       Velocity = velocity;
       FacingDirection = facing;
 
+      World.Map.GetEventChannel(MapEventChannelType.Movement).PostEvent(new MovementEventUpdate { 
+        Location = location,
+        Velocity = velocity,
+        FacingDirection = facing
+      });
+
       return true;
     }
 

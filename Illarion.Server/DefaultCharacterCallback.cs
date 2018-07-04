@@ -6,5 +6,10 @@ namespace Illarion.Server
 {
     internal sealed class DefaultCharacterCallback : ICharacterCallback
     {
+      void moep()
+      {
+        object a;
+        a.
+      }
     }
 }

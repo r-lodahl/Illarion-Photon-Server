@@ -6,24 +6,16 @@ namespace Illarion.Server
 {
   internal class SingleSectorMap : IMap
   {
-    private ImmutableList<IMapSubscriber> _subscriberList;
+    private IEventChannel _movementEventChannel = new EventChannel(MapEventChannelType.Movement, 100);
 
     IChatChannel IMap.GetChatChannel(MapChatChannelType channelType) => null;
+    IEventChannel IMap.GetEventChannel(MapEventChannelType channelType) => _movementEventChannel; //TODO: Support other channel types, too
 
     IMapSubscription IMap.Subscribe(IMapSubscriber subscriber)
     {
       if (subscriber == null) throw new ArgumentNullException(nameof(subscriber));
 
-      _subscriberList.Add(subscriber);
-
       return new Subscription(this, subscriber);
-    }
-
-    public SingleSectorMap() => _subscriberList = ImmutableList<IMapSubscriber>.Empty;
-
-    void UpdateSubscribers()
-    {
-
     }
 
     private sealed class Subscription : IMapSubscription

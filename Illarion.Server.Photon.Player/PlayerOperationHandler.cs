@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using Illarion.Net.Common;
 using Illarion.Net.Common.Operations.Player;
 using Illarion.Server.Persistence.Server;
@@ -37,7 +39,11 @@ namespace Illarion.Server.Photon
       switch ((PlayerOperationCode)operationRequest.OperationCode)
       {
         case PlayerOperationCode.LoadingReady:
-            peer.CharacterController = _worldManager.GetWorld(0).CreateNewCharacter(x => _services.GetRequiredService<IPlayerFactory>().DefaultCharacterCallback(x));
+          peer.CharacterController = _worldManager.GetWorld(0).CreateNewCharacter(x => _services.GetRequiredService<IPlayerFactory>().DefaultCharacterCallback(x));
+
+          if (peer.UpdateCallback == null) peer.UpdateCallback = new UpdateCallback();
+          peer.UpdateCallback.RegisterUpdater(_worldManager.GetWorld(0).Map
+            .GetEventChannel(MapEventChannelType.Movement), peer);
           break;
         case PlayerOperationCode.LogoutPlayer:
           break;
@@ -55,14 +61,12 @@ namespace Illarion.Server.Photon
       return InvalidOperation(operationRequest);
     }
 
-    private void OnPlayerUpdateLocation(PlayerPeerBase peer, OperationRequest operationRequest)
-    {
-      peer.CharacterController.UpdateMovement(
+    private void OnPlayerLeaveMap(PlayerPeerBase peer) => peer.UpdateCallback.UnregisterAll();
+
+    private void OnPlayerUpdateLocation(PlayerPeerBase peer, OperationRequest operationRequest) => peer.CharacterController.UpdateMovement(
         (Vector3)operationRequest.Parameters[(byte)UpdateLocationOperationRequestParameterCode.Location],
         (Vector3)operationRequest.Parameters[(byte)UpdateLocationOperationRequestParameterCode.Velocity],
         (Vector3)operationRequest.Parameters[(byte)UpdateLocationOperationRequestParameterCode.LookAtDirection]
-      );
-    }
-
+    );
   }
 }

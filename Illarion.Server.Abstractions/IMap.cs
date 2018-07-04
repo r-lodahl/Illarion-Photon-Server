@@ -8,6 +8,8 @@ namespace Illarion.Server
   {
     IChatChannel GetChatChannel(MapChatChannelType channelType);
 
+    IEventChannel GetEventChannel(MapEventChannelType channelType);
+
     IMapSubscription Subscribe(IMapSubscriber subscriber);
   }
 }
