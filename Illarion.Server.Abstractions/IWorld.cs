@@ -8,9 +8,10 @@ namespace Illarion.Server
     IMap Map { get; }
 
     /// <summary>Create a new character for this world.</summary>
+    /// <param name="characterId">The id of the character to be created.</param>
     /// <param name="callbackFactory">The factory to create a character.</param>
     /// <returns>The newly created instance.</returns>
-    ICharacter CreateNewCharacter(Func<ICharacter, ICharacterCallback> callbackFactory);
+    ICharacter CreateNewCharacter(Guid characterId, Func<ICharacter, ICharacterCallback> callbackFactory);
 
     /// <summary>Add a character to this world. This causes the character instance to be spawned in the world.</summary>
     /// <param name="character">The character to add. Has to be created using <see cref="CreateNewCharacter"/></param>

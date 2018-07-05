@@ -24,9 +24,9 @@ namespace Illarion.Server
       Map = provider.GetRequiredService<IMapFactory>().CreateMap();
     }
 
-    ICharacter IWorld.CreateNewCharacter(Func<ICharacter, ICharacterCallback> callbackFactory)
+    ICharacter IWorld.CreateNewCharacter(Guid characterId, Func<ICharacter, ICharacterCallback> callbackFactory)
     {
-      var player = new Character(this);
+      var player = new Character(characterId, this);
       player.Callback = callbackFactory(player);
       return player;
     }

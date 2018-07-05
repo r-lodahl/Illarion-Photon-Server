@@ -1,15 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Illarion.Server
 {
   internal sealed class Character : ICharacter, IMapSubscriber
   {
     internal IWorld World { get; }
+
+    public Guid CharacterId { get; }
 
     public Vector3 Location { get; set; }
 
@@ -20,8 +18,9 @@ namespace Illarion.Server
     public ICharacterCallback Callback { get; internal set; }
     IMapSubscription IMapSubscriber.Subscription { get; set; }
 
-    internal Character(IWorld world)
+    internal Character(Guid characterId, IWorld world)
     {
+      CharacterId = characterId;
       World = world ?? throw new ArgumentNullException(nameof(world));
       ((IMapSubscriber)this).Subscription = world.Map.Subscribe(this);
     } 
@@ -32,7 +31,8 @@ namespace Illarion.Server
       Velocity = velocity;
       FacingDirection = facing;
 
-      World.Map.GetEventChannel(MapEventChannelType.Movement).PostEvent(new MovementEventUpdate { 
+      World.Map.GetEventChannel(MapEventChannelType.Location).PostEvent(new LocationEventUpdate {
+        CharacterId = CharacterId;
         Location = location,
         Velocity = velocity,
         FacingDirection = facing

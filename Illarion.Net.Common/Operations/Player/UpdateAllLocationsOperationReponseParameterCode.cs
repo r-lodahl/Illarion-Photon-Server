@@ -1,3 +1,4 @@
+//TODO: Do we need this file twice, as response and as message?
 namespace Illarion.Net.Common.Operations.Player
 {
   public enum UpdateAllLocationsOperationReponseParameterCode : byte

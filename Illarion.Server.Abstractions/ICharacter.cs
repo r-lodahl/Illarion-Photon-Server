@@ -1,3 +1,4 @@
+using System;
 using System.Numerics;
 
 namespace Illarion.Server
@@ -9,6 +10,9 @@ namespace Illarion.Server
   public interface ICharacter : ICharacterController
   {
     ICharacterCallback Callback { get; }
+
+    /// <summary>The unique id of the character.</summary>
+    Guid CharacterId { get; }
 
     /// <summary>The current location of the character.</summary>
     Vector3 Location { get; }

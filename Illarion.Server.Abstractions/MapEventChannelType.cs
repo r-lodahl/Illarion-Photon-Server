@@ -2,7 +2,7 @@ namespace Illarion.Server
 {
     public enum MapEventChannelType
     {
-      /// <summary> The Movement channel contains updates about player movements </summary>
-      Movement
+      /// <summary> The Location channel contains updates about player movements </summary>
+      Location
     }
 }

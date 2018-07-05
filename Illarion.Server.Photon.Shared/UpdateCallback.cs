@@ -6,61 +6,65 @@ namespace Illarion.Server.Photon
 {
     public sealed class UpdateCallback
     {
-      private readonly List<Updater> _updaters;
+        private readonly List<IDisposable> _updaters;
 
-      public UpdateCallback() => _updaters = new List<Updater>();
+        public UpdateCallback() => _updaters = new List<IDisposable>();
 
-      public void RegisterUpdater(IEventChannel channel, PlayerPeerBase peer) => _updaters.Add(new Updater(channel, peer));
+        public void RegisterUpdater<T>(IEventChannel channel, PlayerPeerBase peer, Action<PlayerPeerBase, List<T>> sendUpdatesAction)
+            where T : IEventUpdate => _updaters.Add(new Updater<T>(channel, peer, sendUpdatesAction));
 
-      public void UnregisterAll()
-      {
-        foreach (var updater in _updaters)
+        public void UnregisterAll()
         {
-          updater.Dispose();
-        }
-        _updaters.Clear();
-      }
+            foreach (var updater in _updaters)
+            {
+                updater.Dispose();
+            }
 
-      internal sealed class Updater : IDisposable
-      {
-        private readonly PlayerPeerBase _peer; //TODO: Try to rem the peer here
-        private readonly Timer _timer;
-        private readonly List<IEventUpdate> _updates;
-
-        public Updater(IEventChannel channel, PlayerPeerBase peer)
-        {
-          channel.EventReceived += OnEventUpdateReceived;
-          _peer = peer;
-          _updates = new List<IEventUpdate>();
-
-          _timer = new Timer
-          {
-            Interval = channel.UpdateFrequency
-          };
-          _timer.Elapsed += OnUpdate;
-          _timer.Start();
+            _updaters.Clear();
         }
 
-        public void OnEventUpdateReceived(object sender, IEventUpdate update) => _updates.Add(update);
-
-        public void OnUpdate(object sender, ElapsedEventArgs args)
+        internal sealed class Updater<T> : IDisposable where T : IEventUpdate
         {
-          //TODO: implement
-          foreach (var update in _updates)
-          {
-            // Pack the updates together
-          }
-          _updates.Clear();
+            private readonly Timer _timer;
+            private readonly List<T> _updates;
+            private readonly Action<PlayerPeerBase, List<T>> _sendUpdatesAction;
+            private readonly PlayerPeerBase _peer;
 
-          // peer.SendMessage(...)
-        }
+            public Updater(IEventChannel channel, PlayerPeerBase peer, Action<PlayerPeerBase, List<T>> sendUpdatesAction)
+            {
+                channel.EventReceived += OnEventUpdateReceived;
+                _sendUpdatesAction = sendUpdatesAction;
+                _updates = new List<T>();
+                _peer = peer;
 
-        public void Dispose()
-        {
-          _timer.Stop();
-          _timer.Close();
-          _updates.Clear();
+                _timer = new Timer
+                {
+                    Interval = channel.UpdateFrequency
+                };
+                _timer.Elapsed += OnUpdate;
+                _timer.Start();
+            }
+
+            public void OnEventUpdateReceived(object sender, IEventUpdate update)
+            {
+                if (update is T tUpdate)
+                {
+                    _updates.Add(tUpdate);
+                }
+                else
+                {
+                    throw new ArgumentException($"Expected {typeof(T)} but got {update.GetType()} as update.");
+                }
+            }
+
+            public void OnUpdate(object sender, ElapsedEventArgs args) => _sendUpdatesAction(_peer, _updates);
+
+            public void Dispose()
+            {
+                _timer.Stop();
+                _timer.Close();
+                _updates.Clear();
+            }
         }
-      }
     }
 }
