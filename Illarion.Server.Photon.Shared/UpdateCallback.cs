@@ -10,7 +10,7 @@ namespace Illarion.Server.Photon
 
         public UpdateCallback() => _updaters = new List<IDisposable>();
 
-        public void RegisterUpdater<T>(IEventChannel channel, PlayerPeerBase peer, Action<PlayerPeerBase, List<T>> sendUpdatesAction)
+        public void RegisterUpdater<T>(ITimedEventChannel channel, PlayerPeerBase peer, Action<PlayerPeerBase, List<T>> sendUpdatesAction)
             where T : IEventUpdate => _updaters.Add(new Updater<T>(channel, peer, sendUpdatesAction));
 
         public void UnregisterAll()
@@ -30,7 +30,7 @@ namespace Illarion.Server.Photon
             private readonly Action<PlayerPeerBase, List<T>> _sendUpdatesAction;
             private readonly PlayerPeerBase _peer;
 
-            public Updater(IEventChannel channel, PlayerPeerBase peer, Action<PlayerPeerBase, List<T>> sendUpdatesAction)
+            public Updater(ITimedEventChannel channel, PlayerPeerBase peer, Action<PlayerPeerBase, List<T>> sendUpdatesAction)
             {
                 channel.EventReceived += OnEventUpdateReceived;
                 _sendUpdatesAction = sendUpdatesAction;

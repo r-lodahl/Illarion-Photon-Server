@@ -1,6 +1,6 @@
 namespace Illarion.Server
 {
-  public interface IChatChannel
+  public interface IChatChannel : IEventChannel
   {
   }
 }
