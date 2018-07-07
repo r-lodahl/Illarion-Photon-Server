@@ -34,6 +34,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\Illarion.Net.Common\Illarion.Net.Common.csproj" />
+    <ProjectReference Include="..\Illarion.Server.Navigation\Illarion.Server.Navigation.csproj" />
     <ProjectReference Include="..\Illarion.Server.Persistence\Illarion.Server.Persistence.csproj" />
     <ProjectReference Include="..\Illarion.Server.Photon.Account\Illarion.Server.Photon.Account.csproj" />
     <ProjectReference Include="..\Illarion.Server.Photon.CustomTypes\Illarion.Server.Photon.CustomTypes.csproj" />
