@@ -10,8 +10,8 @@ namespace Illarion.Server.Photon
 
         public UpdateCallback() => _updaters = new List<IDisposable>();
 
-        public void RegisterUpdater<T>(IEventChannel channel, PlayerPeerBase peer, Action<PlayerPeerBase, List<T>> sendUpdatesAction)
-            where T : IEventUpdate => _updaters.Add(new Updater<T>(channel, peer, sendUpdatesAction));
+        public void RegisterUpdater<T>(ITimedEventChannel channel, PlayerPeerBase peer, Action<PlayerPeerBase, List<T>> sendUpdatesAction)
+            where T : ITimedEventChannel => _updaters.Add(new Updater<T>(channel, peer, sendUpdatesAction));
 
         public void UnregisterAll()
         {
@@ -29,13 +29,15 @@ namespace Illarion.Server.Photon
             private readonly List<T> _updates;
             private readonly Action<PlayerPeerBase, List<T>> _sendUpdatesAction;
             private readonly PlayerPeerBase _peer;
+            private readonly ITimedEventChannel _channel;
 
-            public Updater(IEventChannel channel, PlayerPeerBase peer, Action<PlayerPeerBase, List<T>> sendUpdatesAction)
+            public Updater(ITimedEventChannel channel, PlayerPeerBase peer, Action<PlayerPeerBase, List<T>> sendUpdatesAction)
             {
                 channel.EventReceived += OnEventUpdateReceived;
                 _sendUpdatesAction = sendUpdatesAction;
                 _updates = new List<T>();
                 _peer = peer;
+                _channel = channel;
 
                 _timer = new Timer
                 {
@@ -57,7 +59,11 @@ namespace Illarion.Server.Photon
                 }
             }
 
-            public void OnUpdate(object sender, ElapsedEventArgs args) => _sendUpdatesAction(_peer, _updates);
+            public void OnUpdate(object sender, ElapsedEventArgs args)
+            {
+                _sendUpdatesAction(_peer, _updates);
+                _timer.Interval = _channel.UpdateFrequency;
+            }
 
             public void Dispose()
             {
