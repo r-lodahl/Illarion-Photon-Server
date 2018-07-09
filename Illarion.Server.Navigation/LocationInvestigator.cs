@@ -8,6 +8,7 @@ namespace Illarion.Server.Navigation
 {
     internal class LocationInvestigator : ILocationInvestigator
     {
+        internal const float DistancePerSecond = 1f;
         private IServiceProvider ServiceProvider { get; }
         private readonly NavMesh _navMesh;
 
@@ -31,7 +32,7 @@ namespace Illarion.Server.Navigation
         /// <param name="velocity">The current velocity of the character.</param>
         /// <param name="deltaTime">The time between setting the server location and receiving the client location.</param>
         /// <returns>The new server location for the character to be used.</returns>
-        public System.Numerics.Vector3 InvestigateUpdatedLocation(System.Numerics.Vector3 location, System.Numerics.Vector3 updatedLocation, System.Numerics.Vector3 velocity, float deltaTime)
+        public System.Numerics.Vector3 InvestigateUpdatedLocation(System.Numerics.Vector3 location, System.Numerics.Vector3 updatedLocation, float deltaTime)
         {
             var query = new NavMeshQuery(_navMesh, 2048);
 
@@ -47,7 +48,7 @@ namespace Illarion.Server.Navigation
 
             var maxPolys = 256;
             var path = new List<int>(maxPolys);
-            var IsReachable = query.FindPath(ref startNavPoint, ref startNavPoint, path);
+            var IsReachable = query.FindPath(ref startNavPoint, ref endNavPoint, path);
 
             if (!IsReachable)
             {
@@ -124,13 +125,12 @@ namespace Illarion.Server.Navigation
 
             // Set correct position
 
-            var speed = velocity.Length();
-            var timeNeeded = smoothPathDistance / speed;
+            var timeNeeded = smoothPathDistance / DistancePerSecond;
 
             if (timeNeeded > deltaTime)
             {
                 // TODO: Put player back on calculated path for him
-                return updatedLocation;
+                return System.Numerics.Vector3.One;
             }
 
             var pathEndpoint = smoothPath[smoothPath.Count - 1];

@@ -16,4 +16,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Illarion.Server.Abstractions\Illarion.Server.Abstractions.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="Map\navmesh.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

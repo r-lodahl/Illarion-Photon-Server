@@ -11,7 +11,7 @@ namespace Illarion.Server.Photon
         public UpdateCallback() => _updaters = new List<IDisposable>();
 
         public void RegisterUpdater<T>(ITimedEventChannel channel, PlayerPeerBase peer, Action<PlayerPeerBase, List<T>> sendUpdatesAction)
-            where T : ITimedEventChannel => _updaters.Add(new Updater<T>(channel, peer, sendUpdatesAction));
+            where T : IEventUpdate => _updaters.Add(new Updater<T>(channel, peer, sendUpdatesAction));
 
         public void UnregisterAll()
         {

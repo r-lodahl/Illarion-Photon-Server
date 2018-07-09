@@ -54,12 +54,12 @@ namespace Illarion.Server.Navigation
 						    if (!TryParseVector(splitLine, 1, 2, 3, out Vector3 v)) continue;
 							tempVerts.Add(v);
 							break;
-						case "vn":
-							if (splitLine.Length < 4) continue;
+						//case "vn":
+						//	if (splitLine.Length < 4) continue;
 
-						    if (!TryParseVector(splitLine, 1, 2, 3, out Vector3 n)) continue;
-							tempNorms.Add(n);
-							break;
+//						    if (!TryParseVector(splitLine, 1, 2, 3, out Vector3 n)) continue;
+	//						tempNorms.Add(n);
+		//					break;
 						case "f":
 							if (splitLine.Length < 4) continue;
 							else if (splitLine.Length == 4)
@@ -67,23 +67,23 @@ namespace Illarion.Server.Navigation
 							    if (!int.TryParse(splitLine[1].Split('/')[0], out int v0)) continue;
 								if (!int.TryParse(splitLine[2].Split('/')[0], out int v1)) continue;
 								if (!int.TryParse(splitLine[3].Split('/')[0], out int v2)) continue;
-								if (!int.TryParse(splitLine[1].Split('/')[2], out int n0)) continue;
-								if (!int.TryParse(splitLine[2].Split('/')[2], out int n1)) continue;
-								if (!int.TryParse(splitLine[3].Split('/')[2], out int n2)) continue;
+								//if (!int.TryParse(splitLine[1].Split('/')[2], out int n0)) continue;
+								//if (!int.TryParse(splitLine[2].Split('/')[2], out int n1)) continue;
+								//if (!int.TryParse(splitLine[3].Split('/')[2], out int n2)) continue;
 
 								v0 -= 1;
 								v1 -= 1;
 								v2 -= 1;
-								n0 -= 1;
-								n1 -= 1;
-								n2 -= 1;
+								//n0 -= 1;
+								//n1 -= 1;
+								//n2 -= 1;
 
 								_tris.Add(new Triangle3(tempVerts[v0], tempVerts[v1], tempVerts[v2]));
-								_norms.Add(tempNorms[n0]);
-								_norms.Add(tempNorms[n1]);
-								_norms.Add(tempNorms[n2]);
+								//_norms.Add(tempNorms[n0]);
+								//_norms.Add(tempNorms[n1]);
+								//_norms.Add(tempNorms[n2]);
 							}
-							else
+							/*else
 							{
 							    if (!int.TryParse(splitLine[1].Split('/')[0], out int v0)) continue;
 								if (!int.TryParse(splitLine[1].Split('/')[2], out int n0)) continue;
@@ -104,11 +104,11 @@ namespace Illarion.Server.Navigation
 									nii -= 1;
 
 									_tris.Add(new Triangle3(tempVerts[v0], tempVerts[vi], tempVerts[vii]));
-									_norms.Add(tempNorms[n0]);
-									_norms.Add(tempNorms[ni]);
-									_norms.Add(tempNorms[nii]);
+									//_norms.Add(tempNorms[n0]);
+									//_norms.Add(tempNorms[ni]);
+									//_norms.Add(tempNorms[nii]);
 								}
-							}
+							}*/
 							break;
 					}
 				}
