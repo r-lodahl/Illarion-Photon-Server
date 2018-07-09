@@ -32,10 +32,10 @@ namespace Illarion.Server
       FacingDirection = facing;
 
       World.Map.GetEventChannel(MapEventChannelType.Location).PostEvent(new LocationEventUpdate {
-        CharacterId = CharacterId;
+        CharacterId = CharacterId,
         Location = location,
         Velocity = velocity,
-        FacingDirection = facing
+        Facing = facing
       });
 
       return true;

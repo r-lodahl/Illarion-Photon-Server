@@ -41,7 +41,7 @@ namespace Illarion.Server.Photon
 
                     if (peer.UpdateCallback == null) peer.UpdateCallback = new UpdateCallback();
                     peer.UpdateCallback.RegisterUpdater<ILocationEventUpdate>(_worldManager.GetWorld(0).Map
-                        .GetEventChannel(MapEventChannelType.Location), peer, AtUpdateAllLocations);
+                        .GetTimedEventChannel(MapEventChannelType.Location), peer, AtUpdateAllLocations);
                     break;
                 case PlayerOperationCode.LogoutPlayer:
                     OnPlayerLeaveMap(peer);
