@@ -9,13 +9,10 @@ namespace Illarion.Server.Navigation
     internal class LocationInvestigator : ILocationInvestigator
     {
         internal const float DistancePerSecond = 1f;
-        private IServiceProvider ServiceProvider { get; }
         private readonly NavMesh _navMesh;
 
-        internal LocationInvestigator(IServiceProvider provider)
+        internal LocationInvestigator()
         {
-            ServiceProvider = provider ?? throw new ArgumentNullException(nameof(provider));
-
             var parser = new ObjParser("Map\\navmesh.obj");
             var settings = NavMeshGenerationSettings.Default;
             settings.AgentHeight = 1.7f;
@@ -68,7 +65,6 @@ namespace Illarion.Server.Navigation
             query.ClosestPointOnPoly(polys[npolys - 1], endPoly.Position, ref targetPos);
 
             var smoothPath = new List<Vector3>(2048) {iterPos};
-            var smoothPathDistance = 0f;
 
             const float stepSize = 0.5f;
             const float slop = 0.01f;
@@ -96,9 +92,6 @@ namespace Illarion.Server.Navigation
                 var moveTgt = new Vector3();
                 VMad(ref moveTgt, iterPos, delta, len);
 
-                // Sum up distance
-                smoothPathDistance += len;
-
                 //move
                 var result = new Vector3();
                 var visited = new List<int>(16);
@@ -123,14 +116,24 @@ namespace Illarion.Server.Navigation
                 if (smoothPath.Count < smoothPath.Capacity) smoothPath.Add(iterPos);
             }
 
-            // Set correct position
-
+            // Calculate distance on the smooth path (we cannot use len in the algorithm above :( )
+            var smoothPathDistance = 1f;
+            for (var i = 0; i < smoothPath.Count-1; i++)
+            {
+                var a = smoothPath[i];
+                var b = smoothPath[i + 1];
+                var r = Vector3.Subtract(b, a);
+                smoothPathDistance += (float) Math.Sqrt(r.X * r.X + r.Y * r.Y + r.Z * r.Z);
+            }
             var timeNeeded = smoothPathDistance / DistancePerSecond;
+
+            // Choose correct position
 
             if (timeNeeded > deltaTime)
             {
                 // TODO: Put player back on calculated path for him
-                return System.Numerics.Vector3.One;
+                return new System.Numerics.Vector3(timeNeeded, 5f, smoothPathDistance);
+                //return new System.Numerics.Vector3(smoothPath[2].X, smoothPath[2].Y, smoothPath[2].Z);
             }
 
             var pathEndpoint = smoothPath[smoothPath.Count - 1];
