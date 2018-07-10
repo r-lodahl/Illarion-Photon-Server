@@ -16,6 +16,8 @@ namespace Illarion.Server
 
     public IMap Map { get; }
 
+    public INavigator Navigator { get; }
+
     internal World(IServiceProvider provider)
     {
       ServiceProvider = provider ?? throw new ArgumentNullException(nameof(provider));

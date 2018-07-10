@@ -6,14 +6,14 @@ using SharpNav.Pathfinding;
 
 namespace Illarion.Server.Navigation
 {
-    internal class LocationInvestigator : ILocationInvestigator
+    internal class Navigator : INavigator
     {
         internal const float DistancePerSecond = 1f;
         internal const int MaxPolys = 256;
         internal readonly Vector3 MaxExtent = new Vector3(0.5f, 0.2f, 0.5f);
         private readonly NavMesh _navMesh;
 
-        internal LocationInvestigator()
+        internal Navigator()
         {
             var parser = new ObjParser("Map\\navmesh.obj");
             NavMeshGenerationSettings settings = NavMeshGenerationSettings.Default;

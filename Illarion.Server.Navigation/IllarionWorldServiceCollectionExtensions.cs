@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
       if (serviceCollection == null) throw new ArgumentNullException(nameof(serviceCollection));
 
-      serviceCollection.AddSingleton<ILocationInvestigator>(p => new LocationInvestigator());
+      serviceCollection.AddSingleton<INavigator>(p => new LocationInvestigator());
 
       return serviceCollection;
     }

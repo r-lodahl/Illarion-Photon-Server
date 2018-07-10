@@ -4,6 +4,9 @@ namespace Illarion.Server
 {
   public interface IWorld
   {
+    /// <summary>This is the pathfinding tool for the specified world.</summary>
+    INavigator Navigator { get; }
+
     /// <summary>This is the map of this specific world.</summary>
     IMap Map { get; }
 
