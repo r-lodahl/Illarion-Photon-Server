@@ -32,6 +32,8 @@ namespace Illarion.Server.Navigation
         /// <returns>The new server location for the character to be used.</returns>
         public System.Numerics.Vector3 InvestigateUpdatedLocation(System.Numerics.Vector3 location, System.Numerics.Vector3 updatedLocation, float deltaTime)
         {
+            if (deltaTime <= 0f) return location;
+
             var query = new NavMeshQuery(_navMesh, 2048);
 
             var startPoint = new Vector3(location.X, location.Y, location.Z);
