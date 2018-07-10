@@ -27,8 +27,6 @@ namespace Illarion.Server.Navigation
             Vector3 pathResult = investigator.InvestigateUpdatedLocation(oldPosition, newPosition, deltaTime);
 
             _output.WriteLine(pathResult.ToString());
-
-
             Assert.Equal(expectedResult, pathResult);
         }
 

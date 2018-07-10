@@ -9,12 +9,14 @@ namespace Illarion.Server.Navigation
     internal class LocationInvestigator : ILocationInvestigator
     {
         internal const float DistancePerSecond = 1f;
+        internal const int MaxPolys = 256;
+        internal readonly Vector3 MaxExtent = new Vector3(0.5f, 0.2f, 0.5f);
         private readonly NavMesh _navMesh;
 
         internal LocationInvestigator()
         {
             var parser = new ObjParser("Map\\navmesh.obj");
-            var settings = NavMeshGenerationSettings.Default;
+            NavMeshGenerationSettings settings = NavMeshGenerationSettings.Default;
             settings.AgentHeight = 1.7f;
             settings.AgentRadius = 0.6f;
 
@@ -26,7 +28,6 @@ namespace Illarion.Server.Navigation
         /// </summary>
         /// <param name="location">The current location of the character on the server.</param>
         /// <param name="updatedLocation">The updated character location from the client.</param>
-        /// <param name="velocity">The current velocity of the character.</param>
         /// <param name="deltaTime">The time between setting the server location and receiving the client location.</param>
         /// <returns>The new server location for the character to be used.</returns>
         public System.Numerics.Vector3 InvestigateUpdatedLocation(System.Numerics.Vector3 location, System.Numerics.Vector3 updatedLocation, float deltaTime)
@@ -37,115 +38,119 @@ namespace Illarion.Server.Navigation
             var endPoint = new Vector3(updatedLocation.X, updatedLocation.Y, updatedLocation.Z);
             var extent = new Vector3(5f, 5f, 5f);
 
-            var startPoly = query.FindNearestPoly(startPoint, extent);
-            var endPoly = query.FindNearestPoly(endPoint, extent);
+            NavPoint startPoly = query.FindNearestPoly(startPoint, extent);
+            NavPoint endPoly = query.FindNearestPoly(endPoint, extent);
 
             var startNavPoint = new NavPoint(startPoly.Polygon, startPoint);
             var endNavPoint = new NavPoint(endPoly.Polygon, endPoint);
 
-            var maxPolys = 256;
-            var path = new List<int>(maxPolys);
-            var IsReachable = query.FindPath(ref startNavPoint, ref endNavPoint, path);
+            var path = new List<int>(MaxPolys);
+            var isReachable = query.FindPath(ref startNavPoint, ref endNavPoint, path);
 
-            if (!IsReachable)
+            // Case 1: Position not reachable: Do not move the character
+            // The client should only send such an illegal move command
+            // if is map is broken or he tries to cheat
+            if (!isReachable) return location;
+
+            // Get smoothed path from the polygon-only path
+            List<Vector3> smoothPath = PathfindingSmoothPath(query, startPoly, endPoly, path);
+
+            // Check and correct position
+            var timeNeeded = 0f;
+            for (var i = 0; i < smoothPath.Count - 1; i++)
             {
-                // TODO: This should only happen if the user is cheating
-                return location;
+                Vector3 start = smoothPath[i];
+                var diff = Vector3.Subtract(smoothPath[i + 1], start);
+                var distance = (float)Math.Sqrt(diff.X * diff.X + diff.Y * diff.Y + diff.Z * diff.Z);
+                var timeForDistance = distance / DistancePerSecond;
+
+                timeNeeded += timeForDistance;
+                if (timeNeeded <= deltaTime) continue;
+
+                // Case 2: With speed factor for maximum speed, target is still not reachable
+                // Use the last reachable point and move it closer to the endpoint without breaking the time constraint
+                var legalFactor = ( timeForDistance - ( timeNeeded - deltaTime ) ) / timeForDistance;
+                var legalPos = Vector3.Add(start, Vector3.Multiply(diff, legalFactor));
+
+                return new System.Numerics.Vector3(legalPos.X, legalPos.Y, legalPos.Z);
             }
 
+            // Case 3: updatedLocation is fine
+            // If server navmesh targetPosition is too different from updatedLocation use it instead of updatedLocation itself
+            Vector3 pathEndpoint = smoothPath[smoothPath.Count - 1];
+            var pathEndDiff = Vector3.Subtract(endPoint, pathEndpoint);
+            if (pathEndDiff.X <= MaxExtent.X && pathEndDiff.Y <= MaxExtent.Y && pathEndDiff.Z <= MaxExtent.Z
+                && pathEndDiff.X >= -MaxExtent.X && pathEndDiff.Y >= -MaxExtent.Y && pathEndDiff.Z >= -MaxExtent.Z)
+            {
+                return updatedLocation;
+            }
+            return new System.Numerics.Vector3(pathEndpoint.X, pathEndpoint.Y, pathEndpoint.Z);
+        }
+
+        private static List<Vector3> PathfindingSmoothPath(NavMeshQuery query, NavPoint startPoly, NavPoint endPoly, List<int> path)
+        {
             // Make a smooth path from the list of polygons
             // Following code taken from SharpNav-Example-Repository
-
-            //find a smooth path over the mesh surface
-            var npolys = path.Count;
+            var polyNumber = path.Count;
             var polys = path.ToArray();
-            var iterPos = new Vector3();
-            var targetPos = new Vector3();
-            query.ClosestPointOnPoly(startPoly.Polygon, startPoly.Position, ref iterPos);
-            query.ClosestPointOnPoly(polys[npolys - 1], endPoly.Position, ref targetPos);
+            var iterationVector = new Vector3();
+            var targetVector = new Vector3();
+            query.ClosestPointOnPoly(startPoly.Polygon, startPoly.Position, ref iterationVector);
+            query.ClosestPointOnPoly(polys[polyNumber - 1], endPoly.Position, ref targetVector);
 
-            var smoothPath = new List<Vector3>(2048) {iterPos};
+            var smoothPath = new List<Vector3>(2048) { iterationVector };
 
             const float stepSize = 0.5f;
             const float slop = 0.01f;
-            while (npolys > 0 && smoothPath.Count < smoothPath.Capacity)
+            while (polyNumber > 0 && smoothPath.Count < smoothPath.Capacity)
             {
                 //find location to steer towards
-                var steerPos = new Vector3();
-                var steerPosFlag = 0;
-                var steerPosRef = 0;
+                var steerVector = new Vector3();
+                var steerVectorFlag = 0;
+                var steerVectorRef = 0;
 
-                if (!GetSteerTarget(query, iterPos, targetPos, slop, polys, npolys, ref steerPos, ref steerPosFlag, ref steerPosRef)) break;
+                if (!GetSteerTarget(query, iterationVector, targetVector, slop, polys, polyNumber, ref steerVector, ref steerVectorFlag, ref steerVectorRef)) break;
 
-                var endOfPath = ( steerPosFlag & PathfindingCommon.STRAIGHTPATH_END ) != 0;
-                var offMeshConnection = ( steerPosFlag & PathfindingCommon.STRAIGHTPATH_OFFMESH_CONNECTION ) != 0;
+                var endOfPath = (steerVectorFlag & PathfindingCommon.STRAIGHTPATH_END) != 0;
+                var offMeshConnection = (steerVectorFlag & PathfindingCommon.STRAIGHTPATH_OFFMESH_CONNECTION) != 0;
 
                 //find movement delta
-                var delta = steerPos - iterPos;
-                var len = (float) Math.Sqrt(Vector3.Dot(delta, delta));
+                Vector3 delta = steerVector - iterationVector;
+                var length = delta.Length();
 
                 //if steer target is at end of path or off-mesh link
                 //don't move past location
-                if (( endOfPath || offMeshConnection ) && len < stepSize) len = 1;
-                else len = stepSize / len;
+                if ((endOfPath || offMeshConnection) && length < stepSize) length = 1;
+                else length = stepSize / length;
 
-                var moveTgt = new Vector3();
-                VMad(ref moveTgt, iterPos, delta, len);
+                var moveTarget = new Vector3();
+                VMad(ref moveTarget, iterationVector, delta, length);
 
                 //move
                 var result = new Vector3();
                 var visited = new List<int>(16);
-                query.MoveAlongSurface(new NavPoint(polys[0], iterPos), moveTgt, ref result, visited);
-                npolys = FixupCorridor(polys, npolys, maxPolys, visited);
-                float h = 0;
-                query.GetPolyHeight(polys[0], result, ref h);
-                result.Y = h;
-                iterPos = result;
+                query.MoveAlongSurface(new NavPoint(polys[0], iterationVector), moveTarget, ref result, visited);
+                polyNumber = FixupCorridor(polys, polyNumber, MaxPolys, visited);
+                float height = 0;
+                query.GetPolyHeight(polys[0], result, ref height);
+                result.Y = height;
+                iterationVector = result;
 
                 //handle end of path when close enough
-                if (endOfPath && InRange(iterPos, steerPos, slop, 1.0f))
+                if (endOfPath && InRange(iterationVector, steerVector, slop, 1.0f))
                 {
                     //reached end of path
-                    iterPos = targetPos;
-                    if (smoothPath.Count < smoothPath.Capacity) smoothPath.Add(iterPos);
+                    iterationVector = targetVector;
+                    if (smoothPath.Count < smoothPath.Capacity) smoothPath.Add(iterationVector);
 
                     break;
                 }
 
                 //store results
-                if (smoothPath.Count < smoothPath.Capacity) smoothPath.Add(iterPos);
+                if (smoothPath.Count < smoothPath.Capacity) smoothPath.Add(iterationVector);
             }
 
-            // Calculate distance on the smooth path (we cannot use len in the algorithm above :( )
-            var smoothPathDistance = 1f;
-            for (var i = 0; i < smoothPath.Count-1; i++)
-            {
-                var a = smoothPath[i];
-                var b = smoothPath[i + 1];
-                var r = Vector3.Subtract(b, a);
-                smoothPathDistance += (float) Math.Sqrt(r.X * r.X + r.Y * r.Y + r.Z * r.Z);
-            }
-            var timeNeeded = smoothPathDistance / DistancePerSecond;
-
-            // Choose correct position
-
-            if (timeNeeded > deltaTime)
-            {
-                // TODO: Put player back on calculated path for him
-                return new System.Numerics.Vector3(timeNeeded, 5f, smoothPathDistance);
-                //return new System.Numerics.Vector3(smoothPath[2].X, smoothPath[2].Y, smoothPath[2].Z);
-            }
-
-            var pathEndpoint = smoothPath[smoothPath.Count - 1];
-            var differenceSquared = Vector3.Subtract(endPoint, pathEndpoint).LengthSquared();
-            if (differenceSquared > 5f)
-            {
-                // TODO: Define correct threshold when server response should be used instead of client reported location
-                return new System.Numerics.Vector3(pathEndpoint.X, pathEndpoint.Y, pathEndpoint.Z);
-            }
-
-            // Client update is fine (should mostly the case)
-            return updatedLocation;
+            return smoothPath;
         }
 
         private static void VMad(ref Vector3 dest, Vector3 v1, Vector3 v2, float s)
