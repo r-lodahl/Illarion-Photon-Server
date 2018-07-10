@@ -38,7 +38,6 @@ namespace Illarion.Server.Photon
         });
       services.AddIllarionPersistanceContext(configuration);
       services.AddIllarionGameService();
-      services.AddIllarionLocationService();
 
       services.AddTransient<IInitialOperationHandler>(s => new InitialOperationHandler(s));
       services.AddTransient<IAccountOperationHandler>(s => new AccountOperationHandler(s));
