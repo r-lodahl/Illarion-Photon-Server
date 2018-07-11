@@ -32,9 +32,12 @@ namespace Illarion.Server.Photon
       IServiceCollection services = _serviceProviderFactory.CreateBuilder(new ServiceCollection());
       services.AddLogging(builder =>
         {
-          //builder.AddEventLog(new EventLogSettings() { SourceName = "Application", LogName="Illarion Server", Filter = (m, l) => l >= LogLevel.Error });
+#if DEBUG
           builder.AddConsole();
           builder.AddDebug();
+#else
+          builder.AddEventLog(new EventLogSettings() { SourceName = "Application", LogName="Illarion Server", Filter = (m, l) => l >= LogLevel.Error });
+#endif
         });
       services.AddIllarionPersistanceContext(configuration);
       services.AddIllarionGameService();

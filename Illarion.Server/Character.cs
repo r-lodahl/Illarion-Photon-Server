@@ -25,15 +25,21 @@ namespace Illarion.Server
       ((IMapSubscriber)this).Subscription = world.Map.Subscribe(this);
     } 
 
-    bool ICharacterController.UpdateMovement(Vector3 location, Vector3 velocity, Vector3 facing)
+    bool ICharacterController.UpdateMovement(Vector3 location, Vector3 velocity, Vector3 facing, float deltaTime)
     {
-      Location = location;
+      Vector3 updatedLocation = World.Navigator.InvestigateUpdatedLocation(Location, location, deltaTime);
+      if (!updatedLocation.Equals(location))
+      {
+        //TODO: decide: (a) if position changed send instant correction to client (b) changed position sent per normal event channel, put investigation in network
+      }
+
+      Location = updatedLocation;
       Velocity = velocity;
       FacingDirection = facing;
 
       World.Map.GetEventChannel(MapEventChannelType.Location).PostEvent(new LocationEventUpdate {
         CharacterId = CharacterId,
-        Location = location,
+        Location = updatedLocation,
         Velocity = velocity,
         Facing = facing
       });

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
 using Illarion.Net.Common;
 using Illarion.Net.Common.Operations.Player;
@@ -14,6 +15,8 @@ namespace Illarion.Server.Photon
         private readonly IServiceProvider _services;
 
         private readonly IWorldManager _worldManager;
+
+        private long locationUpdateTimestamp;
 
         public PlayerOperationHandler(IServiceProvider services) : base(services)
         {
@@ -62,13 +65,21 @@ namespace Illarion.Server.Photon
 
         private void OnPlayerLeaveMap(PlayerPeerBase peer) => peer.UpdateCallback.UnregisterAll();
 
-        private void OnPlayerUpdateLocation(PlayerPeerBase peer, OperationRequest operationRequest) =>
+        private void OnPlayerUpdateLocation(PlayerPeerBase peer, OperationRequest operationRequest)
+        {
+            var currentTimestamp = Stopwatch.GetTimestamp();
+            var deltaTime = (locationUpdateTimestamp - currentTimestamp) / (double) Stopwatch.Frequency * 1000;
+            locationUpdateTimestamp = currentTimestamp;
+
             peer.CharacterController.UpdateMovement(
-                (Vector3) operationRequest.Parameters[(byte) UpdateLocationOperationRequestParameterCode.Location],
-                (Vector3) operationRequest.Parameters[(byte) UpdateLocationOperationRequestParameterCode.Velocity],
-                (Vector3) operationRequest.Parameters[
-                    (byte) UpdateLocationOperationRequestParameterCode.LookAtDirection]
+                (Vector3)operationRequest.Parameters[(byte)UpdateLocationOperationRequestParameterCode.Location],
+                (Vector3)operationRequest.Parameters[(byte)UpdateLocationOperationRequestParameterCode.Velocity],
+                (Vector3)operationRequest.Parameters[(byte)UpdateLocationOperationRequestParameterCode.LookAtDirection],
+                (float)deltaTime
             );
+
+        }
+            
 
         #endregion
 

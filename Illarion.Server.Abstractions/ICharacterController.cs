@@ -14,8 +14,9 @@ namespace Illarion.Server
     /// <param name="location">The current location of the character.</param>
     /// <param name="velocity">The current movement velocity and direction.</param>
     /// <param name="facing">The diretion the character is facing.</param>
+    /// <param name="deltaTime">The time since the movement was updated the last time.</param>
     /// <returns><see langword="true"/> in case the update was accepted.</returns>
-    bool UpdateMovement(Vector3 location, Vector3 velocity, Vector3 facing);
+    bool UpdateMovement(Vector3 location, Vector3 velocity, Vector3 facing, float deltaTime);
 
     /// <summary>
     /// Send a chat message.
