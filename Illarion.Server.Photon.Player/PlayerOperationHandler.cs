@@ -39,33 +39,60 @@ namespace Illarion.Server.Photon
             switch ((PlayerOperationCode) operationRequest.OperationCode)
             {
                 case PlayerOperationCode.LoadingReady:
-                    peer.CharacterController = _worldManager.GetWorld(0).CreateNewCharacter(peer.Character.CharacterId,
-                        x => _services.GetRequiredService<IPlayerFactory>().DefaultCharacterCallback(x));
-
-                    if (peer.UpdateCallback == null) peer.UpdateCallback = new UpdateCallback();
-                    peer.UpdateCallback.RegisterUpdater<ILocationEventUpdate>(_worldManager.GetWorld(0).Map
-                        .GetTimedEventChannel(MapEventChannelType.Location), peer, AtUpdateAllLocations);
+                    OnLoadingReady(peer, operationRequest);
                     break;
                 case PlayerOperationCode.LogoutPlayer:
-                    OnPlayerLeaveMap(peer);
+                    OnLeaveMap(peer);
                     break;
                 case PlayerOperationCode.SendMessage:
+                    OnSendMessage(peer, operationRequest);
                     break;
                 case PlayerOperationCode.UpdateAllLocations:
                     break;
                 case PlayerOperationCode.UpdateAppearance:
                     break;
                 case PlayerOperationCode.UpdateLocation:
-                    OnPlayerUpdateLocation(peer, operationRequest);
+                    OnUpdateLocation(peer, operationRequest);
                     break;
             }
 
             return InvalidOperation(operationRequest);
         }
 
-        private void OnPlayerLeaveMap(PlayerPeerBase peer) => peer.UpdateCallback.UnregisterAll();
+        private void OnLeaveMap(PlayerPeerBase peer) => peer.UpdateCallback.UnregisterAll();
 
-        private void OnPlayerUpdateLocation(PlayerPeerBase peer, OperationRequest operationRequest)
+        private void OnSendMessage(PlayerPeerBase peer, OperationRequest operationRequest)
+        {
+            var channelType = (MapChatChannelType)operationRequest.Parameters[(byte) SendMessageOperationRequestParameterCode.ChatType];
+
+            IChatChannel channel = _worldManager.GetWorld(0).Map.GetChatChannel(channelType);
+
+            peer.CharacterController.Chat(
+                channel,
+                (string)operationRequest.Parameters[(byte)SendMessageOperationRequestParameterCode.Message]
+            );
+        }
+
+        private void OnLoadingReady(PlayerPeerBase peer, OperationRequest operationRequest)
+        {
+            peer.CharacterController = _worldManager.GetWorld(0).CreateNewCharacter(
+                peer.Character.CharacterId,
+                x => _services.GetRequiredService<IPlayerFactory>().DefaultCharacterCallback(x)
+            );
+
+            if (peer.UpdateCallback == null)
+            {
+                peer.UpdateCallback = new UpdateCallback();
+            }
+
+            peer.UpdateCallback.RegisterUpdater<ILocationEventUpdate>(
+                _worldManager.GetWorld(0).Map.GetTimedEventChannel(MapEventChannelType.Location),
+                peer,
+                AtUpdateAllLocations
+            );
+        }
+
+        private void OnUpdateLocation(PlayerPeerBase peer, OperationRequest operationRequest)
         {
             var currentTimestamp = Stopwatch.GetTimestamp();
             var deltaTime = (locationUpdateTimestamp - currentTimestamp) / (double) Stopwatch.Frequency * 1000;
@@ -77,7 +104,6 @@ namespace Illarion.Server.Photon
                 (Vector3)operationRequest.Parameters[(byte)UpdateLocationOperationRequestParameterCode.LookAtDirection],
                 (float)deltaTime
             );
-
         }
             
 
@@ -87,6 +113,11 @@ namespace Illarion.Server.Photon
 
         private bool IsPeerUsable(PlayerPeerBase peer) =>
             peer != null && peer.Connected && peer.CurrentOperationHandler == this;
+
+        private void AtUpdateChat(PlayerPeerBase peer, IChatMessageEventUpdate update)
+        {
+
+        }
 
         private void AtUpdateAllLocations(PlayerPeerBase peer, List<ILocationEventUpdate> updates)
         {
