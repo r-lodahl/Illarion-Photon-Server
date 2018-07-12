@@ -1,5 +1,6 @@
 using System;
 using System.Numerics;
+using Illarion.Server.Event;
 
 namespace Illarion.Server
 {

@@ -1,4 +1,4 @@
-namespace Illarion.Server
+namespace Illarion.Server.Chat
 {
     public interface IChatMessageEventUpdate : IEventUpdate
     {

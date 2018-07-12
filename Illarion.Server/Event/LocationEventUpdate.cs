@@ -1,7 +1,7 @@
 using System;
 using System.Numerics;
 
-namespace Illarion.Server
+namespace Illarion.Server.Event
 {
     internal class LocationEventUpdate : ILocationEventUpdate
     {
