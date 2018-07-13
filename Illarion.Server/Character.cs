@@ -1,5 +1,6 @@
 using System;
 using System.Numerics;
+using Illarion.Server.Chat;
 using Illarion.Server.Event;
 
 namespace Illarion.Server
@@ -48,9 +49,16 @@ namespace Illarion.Server
       return true;
     }
 
-    void ICharacterController.Chat(IChatChannel channel, string text)
-    {
-      throw new NotImplementedException();
+      void ICharacterController.Chat(MapChatChannelType channelType, string text)
+      {
+          var update = new ChatMessageEventUpdate
+          {
+              CharacterId = CharacterId,
+              ChatType = channelType,
+              Message = text,
+              Origin = Location
+          };
+          World.Map.GetChatChannel(channelType).PostEvent(update);
+        }
     }
-  }
 }

@@ -10,13 +10,13 @@ namespace Illarion.Server.Photon.Rpc
         [DataMember(Name = nameof(CharacterId), Code = (byte)UpdateLocationEventParameterCode.CharacterId)]
         internal Guid CharacterId { get; set; }
 
-        [DataMember(Name = nameof(CharacterId), Code = (byte)UpdateLocationEventParameterCode.Location)]
+        [DataMember(Name = nameof(Location), Code = (byte)UpdateLocationEventParameterCode.Location)]
         internal Vector3 Location { get; set; }
 
-        [DataMember(Name = nameof(CharacterId), Code = (byte)UpdateLocationEventParameterCode.LookAtDirection)]
+        [DataMember(Name = nameof(Facing), Code = (byte)UpdateLocationEventParameterCode.LookAtDirection)]
         internal Vector3 Facing { get; set; }
 
-        [DataMember(Name = nameof(CharacterId), Code = (byte)UpdateLocationEventParameterCode.Velocity)]
+        [DataMember(Name = nameof(Velocity), Code = (byte)UpdateLocationEventParameterCode.Velocity)]
         internal Vector3 Velocity { get; set; }
     }
 }

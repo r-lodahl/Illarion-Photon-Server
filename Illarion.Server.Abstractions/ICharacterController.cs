@@ -1,7 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
+using Illarion.Server.Event;
 
 namespace Illarion.Server
 {
@@ -18,11 +16,11 @@ namespace Illarion.Server
     /// <returns><see langword="true"/> in case the update was accepted.</returns>
     bool UpdateMovement(Vector3 location, Vector3 velocity, Vector3 facing, float deltaTime);
 
-    /// <summary>
-    /// Send a chat message.
-    /// </summary>
-    /// <param name="channel">The chat channel that defines how the message is send.</param>
-    /// <param name="text">The text that is actually send.</param>
-    void Chat(IChatChannel channel, string text);
+      /// <summary>
+      /// Send a chat message.
+      /// </summary>
+      /// <param name="channelType">The chat channel type that defines how the message is send.</param>
+      /// <param name="text">The text that is actually send.</param>
+      void Chat(MapChatChannelType channelType, string text);
   }
 }

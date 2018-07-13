@@ -34,7 +34,7 @@ namespace Illarion.Net.Common
     /// </summary>
     /// <seealso cref="Operations.Player.UpdateAllLocationReturnCode"/>
     /// <seealso cref="Operations.Player.UpdateAllLocationsOperationReponseParameterCode"/>
-    UpdateAllLocations,
+    UpdateAllLocation,
 
     /// <summary>
     /// This command is send by the server to report the current appearance of a specific character to the client.

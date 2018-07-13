@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Illarion.Net.Common
 {
     public enum PlayerEventCode : byte
@@ -23,6 +19,8 @@ namespace Illarion.Net.Common
       /// </summary>
       /// <seealso cref="Operations.Player.UpdateAllLocationReturnCode"/>
       /// <seealso cref="Operations.Player.UpdateAllLocationsOperationReponseParameterCode"/>
-      UpdateAllLocations
+      UpdateAllLocations,
+
+      Chat
     }
 }

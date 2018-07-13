@@ -5,6 +5,14 @@ namespace Illarion.Server
         /// <summary> The Location channel contains updates about player movements </summary>
         Location,
 
-        Appearance
+        Appearance,
+
+        YellingChat,
+
+        WhisperingChat,
+
+        TalkingChat,
+
+        GlobalChat
     }
 }

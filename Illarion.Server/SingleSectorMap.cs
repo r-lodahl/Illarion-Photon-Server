@@ -10,22 +10,8 @@ namespace Illarion.Server
     {
         #region Channels
 
-        private readonly Dictionary<MapEventChannelType, ITimedEventChannel> _timedEventChannels =
-            new Dictionary<MapEventChannelType, ITimedEventChannel>();
-
         private readonly Dictionary<MapEventChannelType, IEventChannel> _eventChannels =
             new Dictionary<MapEventChannelType, IEventChannel>();
-
-        private readonly Dictionary<MapChatChannelType, IChatChannel> _chatChannels =
-            new Dictionary<MapChatChannelType, IChatChannel>(4);
-
-        IChatChannel IMap.GetChatChannel(MapChatChannelType channelType)
-        {
-            if (_chatChannels.TryGetValue(channelType, out IChatChannel channel)) return channel;
-            channel = ChatChannel.GetNewChatChannel(channelType);
-            _chatChannels.Add(channelType, channel);
-            return channel;
-        }
 
         IEventChannel IMap.GetEventChannel(MapEventChannelType channelType)
         {
@@ -35,12 +21,21 @@ namespace Illarion.Server
             return channel;
         }
 
-        ITimedEventChannel IMap.GetTimedEventChannel(MapEventChannelType channelType)
+        IEventChannel IMap.GetChatChannel(MapChatChannelType channelType)
         {
-            if (_timedEventChannels.TryGetValue(channelType, out ITimedEventChannel channel)) return channel;
-            channel = new TimedEventChannel(channelType, 100f);
-            _timedEventChannels.Add(channelType, channel);
-            return channel;
+            switch (channelType)
+            {
+                case MapChatChannelType.Global:
+                    return ( (IMap) this ).GetEventChannel(MapEventChannelType.GlobalChat);
+                case MapChatChannelType.Speaking:
+                    return ( (IMap) this ).GetEventChannel(MapEventChannelType.TalkingChat);
+                case MapChatChannelType.Yelling:
+                    return ( (IMap) this ).GetEventChannel(MapEventChannelType.YellingChat);
+                case MapChatChannelType.Whispering:
+                    return ( (IMap) this ).GetEventChannel(MapEventChannelType.WhisperingChat);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(channelType), channelType, "Illegal chat channel requested!");
+            }
         }
 
         #endregion

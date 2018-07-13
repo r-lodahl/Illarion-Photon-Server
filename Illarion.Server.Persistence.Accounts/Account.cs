@@ -11,7 +11,7 @@ namespace Illarion.Server.Persistence.Accounts
     public Account(string accountName) => AccountName = accountName;
 
     public Guid AccountId { get; private set; }
-    public string AccountName { get; private set; }
+    public string AccountName { get; }
     public string Password { get; set; }
     public string EMail { get; set; }
     public string Status { get; set; }

@@ -35,7 +35,7 @@ namespace Illarion.Server
     /// <param name="character">The character instance that should be logged out.</param>
     /// <exception cref="ArgumentNullException"><paramref name="character"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentException">
-    /// <paramref name="character"/> is not part of this <see cref="World"/>.
+    /// <paramref name="character"/> is not part of this <see cref="IWorld"/>.
     /// </exception>
     void RemoveCharacter(ICharacter character);
   }

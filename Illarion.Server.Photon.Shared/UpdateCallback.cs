@@ -10,8 +10,8 @@ namespace Illarion.Server.Photon
 
         public UpdateCallback() => _updaters = new List<IDisposable>();
 
-        public void RegisterUpdater<T>(ITimedEventChannel channel, PlayerPeerBase peer, Action<PlayerPeerBase, List<T>> sendUpdatesAction)
-            where T : IEventUpdate => _updaters.Add(new Updater<T>(channel, peer, sendUpdatesAction));
+        public void RegisterUpdater<T>(IEventChannel channel, PlayerPeerBase peer, Action<PlayerPeerBase, List<T>> sendUpdatesAction)
+            where T : IEventUpdate => _updaters.Add(new Updater<T>(channel, peer, sendUpdatesAction, 100f));
 
         public void UnregisterAll()
         {
@@ -29,9 +29,9 @@ namespace Illarion.Server.Photon
             private readonly List<T> _updates;
             private readonly Action<PlayerPeerBase, List<T>> _sendUpdatesAction;
             private readonly PlayerPeerBase _peer;
-            private readonly ITimedEventChannel _channel;
+            private readonly IEventChannel _channel;
 
-            public Updater(ITimedEventChannel channel, PlayerPeerBase peer, Action<PlayerPeerBase, List<T>> sendUpdatesAction)
+            public Updater(IEventChannel channel, PlayerPeerBase peer, Action<PlayerPeerBase, List<T>> sendUpdatesAction, float initialUpdateFrequency)
             {
                 channel.EventReceived += OnEventUpdateReceived;
                 _sendUpdatesAction = sendUpdatesAction;
@@ -41,7 +41,7 @@ namespace Illarion.Server.Photon
 
                 _timer = new Timer
                 {
-                    Interval = channel.UpdateFrequency
+                    Interval = initialUpdateFrequency
                 };
                 _timer.Elapsed += OnUpdate;
                 _timer.Start();
@@ -59,14 +59,12 @@ namespace Illarion.Server.Photon
                 }
             }
 
-            public void OnUpdate(object sender, ElapsedEventArgs args)
-            {
-                _sendUpdatesAction(_peer, _updates);
-                _timer.Interval = _channel.UpdateFrequency;
-            }
+            //TODO: Change update frequency if needed
+            public void OnUpdate(object sender, ElapsedEventArgs args) => _sendUpdatesAction(_peer, _updates);
 
             public void Dispose()
             {
+                _channel.EventReceived -= OnEventUpdateReceived;
                 _timer.Stop();
                 _timer.Close();
                 _updates.Clear();

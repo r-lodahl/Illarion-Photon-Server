@@ -5,7 +5,7 @@ namespace Illarion.Server
 {
   internal class WorldManager : IWorldManager
   {
-    private ImmutableDictionary<int, World> _worlds;
+    private readonly ImmutableDictionary<int, World> _worlds;
 
     private IServiceProvider ServiceProvider { get; }
 

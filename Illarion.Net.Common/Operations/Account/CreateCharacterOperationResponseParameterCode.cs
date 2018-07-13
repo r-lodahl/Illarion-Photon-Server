@@ -4,7 +4,7 @@ namespace Illarion.Net.Common.Operations.Account
   {
     /// <summary>
     /// The list of fields that were invalid during the attempt of character creation.
-    /// Encoded as <see cref="System.Collections.Generic.List{byte}"/>.
+    /// Encoded as <see cref="System.Collections.Generic.List{Byte}"/>.<
     /// </summary>
     /// <remarks>
     /// The IDs that may be present in this list are the request parameter codes. In case the character creation is
@@ -15,7 +15,7 @@ namespace Illarion.Net.Common.Operations.Account
 
     /// <summary>
     /// A list of error messages. The index of each message matches the field index in the <see cref="InvalidFields"/>
-    /// parameter. Encoded as <see cref="System.Collections.Generic.List{string}"/>.
+    /// parameter. Encoded as <see cref="System.Collections.Generic.List{String}"/>.
     /// </summary>
     /// <remarks>The length of the list matches the length of the list in <see cref="InvalidFields"/>.</remarks>
     InvalidParamterMessages,

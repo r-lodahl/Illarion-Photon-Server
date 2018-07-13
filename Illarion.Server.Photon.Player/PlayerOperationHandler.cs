@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Numerics;
 using Illarion.Net.Common;
 using Illarion.Net.Common.Operations.Player;
+using Illarion.Server.Chat;
+using Illarion.Server.Event;
 using Illarion.Server.Photon.Rpc;
 using Microsoft.Extensions.DependencyInjection;
 using Photon.SocketServer;
@@ -16,7 +18,7 @@ namespace Illarion.Server.Photon
 
         private readonly IWorldManager _worldManager;
 
-        private long locationUpdateTimestamp;
+        private long _locationUpdateTimestamp;
 
         public PlayerOperationHandler(IServiceProvider services) : base(services)
         {
@@ -47,7 +49,7 @@ namespace Illarion.Server.Photon
                 case PlayerOperationCode.SendMessage:
                     OnSendMessage(peer, operationRequest);
                     break;
-                case PlayerOperationCode.UpdateAllLocations:
+                case PlayerOperationCode.UpdateAllLocation:
                     break;
                 case PlayerOperationCode.UpdateAppearance:
                     break;
@@ -59,16 +61,14 @@ namespace Illarion.Server.Photon
             return InvalidOperation(operationRequest);
         }
 
-        private void OnLeaveMap(PlayerPeerBase peer) => peer.UpdateCallback.UnregisterAll();
+        private static void OnLeaveMap(PlayerPeerBase peer) => peer.UpdateCallback.UnregisterAll();
 
-        private void OnSendMessage(PlayerPeerBase peer, OperationRequest operationRequest)
+        private static void OnSendMessage(PlayerPeerBase peer, OperationRequest operationRequest)
         {
             var channelType = (MapChatChannelType)operationRequest.Parameters[(byte) SendMessageOperationRequestParameterCode.ChatType];
 
-            IChatChannel channel = _worldManager.GetWorld(0).Map.GetChatChannel(channelType);
-
             peer.CharacterController.Chat(
-                channel,
+                channelType,
                 (string)operationRequest.Parameters[(byte)SendMessageOperationRequestParameterCode.Message]
             );
         }
@@ -85,8 +85,22 @@ namespace Illarion.Server.Photon
                 peer.UpdateCallback = new UpdateCallback();
             }
 
+            // Register to events on the current map chunk
+
+            _worldManager.GetWorld(0).Map.GetEventChannel(MapEventChannelType.TalkingChat).EventReceived +=
+                (sender, opRequest) => AtTalkingChat(sender, opRequest, peer);
+
+            _worldManager.GetWorld(0).Map.GetEventChannel(MapEventChannelType.WhisperingChat).EventReceived +=
+                (sender, opRequest) => AtWhisperingChat(sender, opRequest, peer);
+
+            _worldManager.GetWorld(0).Map.GetEventChannel(MapEventChannelType.GlobalChat).EventReceived +=
+                (sender, opRequest) => AtGlobalChat(sender, opRequest, peer);
+
+            _worldManager.GetWorld(0).Map.GetEventChannel(MapEventChannelType.YellingChat).EventReceived +=
+                (sender, opRequest) => AtYellingChat(sender, opRequest, peer);
+
             peer.UpdateCallback.RegisterUpdater<ILocationEventUpdate>(
-                _worldManager.GetWorld(0).Map.GetTimedEventChannel(MapEventChannelType.Location),
+                _worldManager.GetWorld(0).Map.GetEventChannel(MapEventChannelType.Location),
                 peer,
                 AtUpdateAllLocations
             );
@@ -95,8 +109,8 @@ namespace Illarion.Server.Photon
         private void OnUpdateLocation(PlayerPeerBase peer, OperationRequest operationRequest)
         {
             var currentTimestamp = Stopwatch.GetTimestamp();
-            var deltaTime = (locationUpdateTimestamp - currentTimestamp) / (double) Stopwatch.Frequency * 1000;
-            locationUpdateTimestamp = currentTimestamp;
+            var deltaTime = (_locationUpdateTimestamp - currentTimestamp) / (double) Stopwatch.Frequency * 1000;
+            _locationUpdateTimestamp = currentTimestamp;
 
             peer.CharacterController.UpdateMovement(
                 (Vector3)operationRequest.Parameters[(byte)UpdateLocationOperationRequestParameterCode.Location],
@@ -105,8 +119,7 @@ namespace Illarion.Server.Photon
                 (float)deltaTime
             );
         }
-            
-
+        
         #endregion
 
         #region Events
@@ -114,9 +127,33 @@ namespace Illarion.Server.Photon
         private bool IsPeerUsable(PlayerPeerBase peer) =>
             peer != null && peer.Connected && peer.CurrentOperationHandler == this;
 
-        private void AtUpdateChat(PlayerPeerBase peer, IChatMessageEventUpdate update)
-        {
+        private void AtTalkingChat(object sender, IEventUpdate update, PlayerPeerBase peer) => AtChat(update, peer, 10f);
+        private void AtWhisperingChat(object sender, IEventUpdate update, PlayerPeerBase peer) => AtChat(update, peer, 2f);
+        private void AtYellingChat(object sender, IEventUpdate update, PlayerPeerBase peer) => AtChat(update, peer, 20f);
+        private void AtGlobalChat(object sender, IEventUpdate update, PlayerPeerBase peer) => AtChat(update, peer, 1000f);
 
+        private void AtChat(IEventUpdate update, PlayerPeerBase peer, float chatDistance)
+        {
+            if (!IsPeerUsable(peer)) throw new InvalidOperationException("Peer used for event messaging is out of service");
+
+            if (update is IChatMessageEventUpdate chatUpdate && Vector3.DistanceSquared(peer.Character.Location, chatUpdate.Origin) <= chatDistance)
+            {
+                var responseData = new ChatMessageEvent
+                {
+                    CharacterId = chatUpdate.CharacterId,
+                    ChatType = (byte) chatUpdate.ChatType,
+                    Message = chatUpdate.Message
+                };
+
+                peer.SendEvent(new EventData((byte)PlayerEventCode.Chat)
+                {
+                    Parameters = responseData.ToDictionary()
+                }, new SendParameters());
+            }
+            else
+            {
+                throw new ArgumentException($"Expected {typeof(IChatMessageEventUpdate)} but got {update.GetType()} as update.");
+            }
         }
 
         private void AtUpdateAllLocations(PlayerPeerBase peer, List<ILocationEventUpdate> updates)
@@ -126,7 +163,7 @@ namespace Illarion.Server.Photon
 
             var responseData = new UpdateAllLocationEvent {LocationList = new List<EventData>()};
 
-            foreach (var update in updates)
+            foreach (ILocationEventUpdate update in updates)
             {
                 responseData.LocationList.Add(GetLocationFromUpdate((byte) PlayerEventCode.UpdateLocation, update));
             }
