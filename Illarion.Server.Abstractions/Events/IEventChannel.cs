@@ -1,6 +1,6 @@
 using System;
 
-namespace Illarion.Server
+namespace Illarion.Server.Events
 {
     public interface IEventChannel
     {

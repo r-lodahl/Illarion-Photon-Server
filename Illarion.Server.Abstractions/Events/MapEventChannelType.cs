@@ -1,4 +1,4 @@
-namespace Illarion.Server
+namespace Illarion.Server.Events
 {
     public enum MapEventChannelType
     {

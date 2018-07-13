@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using Illarion.Server.Chat;
-using Illarion.Server.Event;
+using Illarion.Server.Events;
 
 namespace Illarion.Server
 {

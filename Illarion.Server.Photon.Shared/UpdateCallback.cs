@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Timers;
+using Illarion.Server.Events;
 
 namespace Illarion.Server.Photon
 {
@@ -15,7 +16,7 @@ namespace Illarion.Server.Photon
 
         public void UnregisterAll()
         {
-            foreach (var updater in _updaters)
+            foreach (IDisposable updater in _updaters)
             {
                 updater.Dispose();
             }

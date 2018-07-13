@@ -1,4 +1,4 @@
-namespace Illarion.Server.Event
+namespace Illarion.Server.Events
 {
   public enum MapChatChannelType
   {

@@ -1,7 +1,6 @@
 using System.Numerics;
-using Illarion.Server.Event;
 
-namespace Illarion.Server.Chat
+namespace Illarion.Server.Events
 {
     public interface IChatMessageEventUpdate : IEventUpdate
     {

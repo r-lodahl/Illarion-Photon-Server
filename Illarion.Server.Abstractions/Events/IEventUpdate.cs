@@ -1,6 +1,6 @@
 using System;
 
-namespace Illarion.Server
+namespace Illarion.Server.Events
 {
     /// <summary>
     /// Contains update data for one specific character

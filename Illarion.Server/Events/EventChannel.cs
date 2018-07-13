@@ -1,6 +1,6 @@
 using System;
 
-namespace Illarion.Server.Event
+namespace Illarion.Server.Events
 {
     internal class EventChannel : IEventChannel
     {

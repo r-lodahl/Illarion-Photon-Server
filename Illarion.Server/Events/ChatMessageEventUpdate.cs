@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
-using Illarion.Server.Chat;
+using Illarion.Server.Events;
 
-namespace Illarion.Server.Event
+namespace Illarion.Server.Events
 {
     internal class ChatMessageEventUpdate : IChatMessageEventUpdate
     {
