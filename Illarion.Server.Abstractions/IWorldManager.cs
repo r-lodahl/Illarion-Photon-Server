@@ -8,6 +8,8 @@ namespace Illarion.Server
 {
   public interface IWorldManager
   {
+    int WorldCount { get; }
+
     IWorld GetWorld(int index);
   }
 }

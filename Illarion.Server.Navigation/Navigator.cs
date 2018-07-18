@@ -12,17 +12,20 @@ namespace Illarion.Server.Navigation
         internal const int MaxPolys = 256;
         internal readonly Vector3 MaxExtent = new Vector3(0.5f, 0.2f, 0.5f);
         private readonly NavMesh _navMesh;
+        private readonly IWorld _world;
 
-        internal Navigator()
+        internal Navigator(IWorld world, string navmeshPath)
         {
-            var parser = new ObjParser("Map\\navmesh.obj");
+            _world = world ?? throw new ArgumentNullException(nameof(world), "Received null world value for navmesh generation");
+
+            var parser = new ObjParser(navmeshPath);
             NavMeshGenerationSettings settings = NavMeshGenerationSettings.Default;
             settings.AgentHeight = 1.7f;
             settings.AgentRadius = 0.6f;
 
             _navMesh = NavMesh.Generate(parser.GetTriangles(), settings);
         }
-
+        
         /// <summary>
         /// For a given character location and a wanted new location, checks if the new location was reachable for the client. If not a correction will be returned.
         /// </summary>

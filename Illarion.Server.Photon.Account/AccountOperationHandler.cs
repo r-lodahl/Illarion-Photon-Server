@@ -4,6 +4,7 @@ using System.Linq;
 using Illarion.Net.Common;
 using Illarion.Net.Common.Operations.Account;
 using Illarion.Server.Persistence;
+using Illarion.Server.Persistence.Accounts;
 using Illarion.Server.Persistence.Server;
 using Illarion.Server.Photon.Properties;
 using Illarion.Server.Photon.Rpc;

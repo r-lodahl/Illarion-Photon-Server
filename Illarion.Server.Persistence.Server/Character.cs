@@ -26,8 +26,10 @@ namespace Illarion.Server.Persistence.Server
     public Guid AccountId { get; private set; }
     public Guid CharacterId { get; private set; }
     public string Name { get; private set; }
+    public string Description { get; set; }
     public Guid RaceTypeId { get; set; }
     public CharacterStatus Status { get; set; }
+    public int MapId { get; set; }
     public Vector3 Location {
       get => new Vector3(_location[0], _location[1], _location[2]);
       set => value.CopyTo(_location);

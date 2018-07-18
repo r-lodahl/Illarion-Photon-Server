@@ -24,6 +24,7 @@ namespace Illarion.Server
 
       _players = ImmutableHashSet.Create<Character>();
       Map = provider.GetRequiredService<IMapFactory>().CreateMap();
+      Navigator = provider.GetRequiredService<INavigationManager>().GetNavigator(this);
     }
 
     ICharacter IWorld.CreateNewCharacter(Guid characterId, Func<ICharacter, ICharacterCallback> callbackFactory)

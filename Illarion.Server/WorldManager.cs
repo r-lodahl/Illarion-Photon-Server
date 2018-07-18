@@ -11,6 +11,8 @@ namespace Illarion.Server
 
     private IImmutableDictionary<int, World> Worlds => _worlds;
 
+    public int WorldCount => _worlds.Count;
+
     internal WorldManager(IServiceProvider provider)
     {
       ServiceProvider = provider ?? throw new ArgumentNullException(nameof(provider));
