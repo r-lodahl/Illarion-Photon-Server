@@ -29,11 +29,7 @@ namespace Illarion.Server
     bool ICharacterController.UpdateMovement(Vector3 location, Vector3 velocity, Vector3 facing, float deltaTime)
     {
       Vector3 updatedLocation = World.Navigator.InvestigateUpdatedLocation(Location, location, deltaTime);
-      if (!updatedLocation.Equals(location))
-      {
-        //TODO: decide: (a) if position changed send instant correction to client (b) changed position sent per normal event channel, put investigation in network
-      }
-
+      
       Location = updatedLocation;
       Velocity = velocity;
       FacingDirection = facing;
@@ -45,8 +41,9 @@ namespace Illarion.Server
         Facing = facing
       });
 
-      return true;
-    }
+      return updatedLocation.Equals(location);
+      //TODO: decide: (a) if position changed send instant correction to client (b) changed position sent per normal event channel, put investigation in network
+      }
 
       void ICharacterController.Chat(MapChatChannelType channelType, string text)
       {

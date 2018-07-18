@@ -111,12 +111,15 @@ namespace Illarion.Server.Photon
             var deltaTime = (_locationUpdateTimestamp - currentTimestamp) / (double) Stopwatch.Frequency * 1000;
             _locationUpdateTimestamp = currentTimestamp;
 
-            peer.CharacterController.UpdateMovement(
-                (Vector3)operationRequest.Parameters[(byte)UpdateLocationOperationRequestParameterCode.Location],
-                (Vector3)operationRequest.Parameters[(byte)UpdateLocationOperationRequestParameterCode.Velocity],
-                (Vector3)operationRequest.Parameters[(byte)UpdateLocationOperationRequestParameterCode.LookAtDirection],
-                (float)deltaTime
-            );
+            if (peer.CharacterController.UpdateMovement(
+                (Vector3) operationRequest.Parameters[(byte) UpdateLocationOperationRequestParameterCode.Location],
+                (Vector3) operationRequest.Parameters[(byte) UpdateLocationOperationRequestParameterCode.Velocity],
+                (Vector3) operationRequest.Parameters[(byte) UpdateLocationOperationRequestParameterCode.LookAtDirection],
+                (float) deltaTime
+            ))
+            {
+                peer.Character.Location =(Vector3) operationRequest.Parameters[(byte) UpdateLocationOperationRequestParameterCode.Location];
+            }
         }
         
         #endregion
