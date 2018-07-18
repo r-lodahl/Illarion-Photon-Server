@@ -26,7 +26,6 @@ namespace Illarion.Net.Common
     /// <seealso cref="Operations.Player.UpdateLocationOperationReponseParameterCode"/>
     UpdateLocation,
 
-    //TODO: If not issued by the client, this command should only send data for those character whose values have changed since last time the message was sent
     /// <summary>
     /// This operation is actively send by the server and it contains location updates for every character presently
     /// monitored by the client receiving.
@@ -35,11 +34,6 @@ namespace Illarion.Net.Common
     /// <seealso cref="Operations.Player.UpdateAllLocationReturnCode"/>
     /// <seealso cref="Operations.Player.UpdateAllLocationsOperationReponseParameterCode"/>
     UpdateAllLocation,
-
-    /// <summary>
-    /// This command is send by the server to report the current appearance of a specific character to the client.
-    /// </summary>
-    UpdateAppearance,
 
     /// <summary>
     ///   <para>
@@ -51,5 +45,81 @@ namespace Illarion.Net.Common
     ///   </para>
     /// </summary>
     SendMessage,
-  }
+
+      /// <summary>
+      /// This command should be send by the player if the description for an item is requested.
+      /// This is needed, as scripts may modify single lookat-texts during runtime.
+      /// </summary>
+    LookAt,
+
+      /// <summary>
+      /// This command should be send by the player if he enters into attack mode with a specific target.
+      /// </summary>
+      FocusCharacter,
+
+      /// <summary>
+      /// This command should be used whenever the player attacks his focused target.
+      /// </summary>
+      AttackCharacter,
+
+      /// <summary>
+      /// This command should be send by the player if the player uses an ability.
+      /// </summary>
+      UseAbility,
+
+      /// <summary>
+      /// This command should be send by the player if the player uses an object on the map.
+      /// </summary>
+      UseMapObject,
+
+      /// <summary>
+      /// This command should be send by the player if he uses an equipped item.
+      /// </summary>
+      UseEquipmentItem,
+
+      /// <summary>
+      /// This command should be send by the player if he uses and inventory item.
+      /// </summary>
+      UseInventoryItem,
+
+      /// <summary>
+      /// This command should be send by the player if he opens his inventory.
+      /// </summary>
+      OpenWindow,
+
+      /// <summary>
+      /// This command should be send by the player if he moves an item.
+      /// </summary>
+      MoveItem,
+
+      /// <summary>
+      /// This command should be send by the player if he closes inventory or crafting window.
+      /// </summary>
+      CloseWindow,
+
+      /// <summary>
+      /// This command should be send by the player if he begins to craft an item.
+      /// </summary>
+      CraftItem,
+
+      /// <summary>
+      /// This command should be send by an admin player to view all online players.
+      /// </summary>
+      AdminShowPlayers,
+
+      /// <summary>
+      /// This command should be send by an admin player to broadcast to the whole world.
+      /// </summary>
+      AdminBroadcast,
+
+      /// <summary>
+      /// This command should be send by an admin player to set the location of a character.
+      /// </summary>
+      AdminSetLocation,
+
+      /// <summary>
+      /// This command should be send by an admin player to chat as another character.
+      /// </summary>
+      AdminChatAs
+    }
 }
