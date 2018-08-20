@@ -50,8 +50,6 @@ namespace Illarion.Server.Photon
                     break;
                 case PlayerOperationCode.UpdateAllLocation:
                     break;
-                case PlayerOperationCode.UpdateAppearance:
-                    break;
                 case PlayerOperationCode.UpdateLocation:
                     OnUpdateLocation(peer, operationRequest);
                     break;
