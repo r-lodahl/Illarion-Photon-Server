@@ -22,4 +22,3 @@
 *.nuget.targets
 /Illarion.Server.Persistence.Accounts.Migrations/Migrations
 /Illarion.Server.Persistence.Server.Migrations/Migrations
-/Illarion.Server.Persistence.Design/IllarionServerConfig.json
