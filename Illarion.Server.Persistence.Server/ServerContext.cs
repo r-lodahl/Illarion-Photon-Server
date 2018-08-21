@@ -9,9 +9,9 @@ namespace Illarion.Server.Persistence.Server
   {
     public ServerContext(DbContextOptions<ServerContext> options) : base(options)
     {
-      var timer = new System.Timers.Timer(30*60*1000);
-      timer.Elapsed += (sender, args) => { SaveChanges(); };
-      timer.Start();
+ //     var timer = new System.Timers.Timer(30*60*1000);
+ //     timer.Elapsed += (sender, args) => { SaveChanges(); };
+ //     timer.Start();
     }
 
     public DbSet<Character> Characters { get; set; }
@@ -48,8 +48,8 @@ namespace Illarion.Server.Persistence.Server
         characterEntity.Property(c => c.Name).
           IsRequired().IsUnicode();
 
-        characterEntity.Property(c => c.Description).
-          HasDefaultValue("");
+  //      characterEntity.Property(c => c.Description).
+    //      HasDefaultValue("");
 
         characterEntity.Property(c => c.Status).
           IsRequired().
@@ -57,9 +57,9 @@ namespace Illarion.Server.Persistence.Server
 
         characterEntity.Property(c => c.RaceTypeId).IsRequired();
 
-        characterEntity.Property(c => c.MapId).
-          IsRequired().
-          HasDefaultValue(0);
+ //       characterEntity.Property(c => c.MapId).
+  //        IsRequired().
+   //       HasDefaultValue(0);
 
         characterEntity.Ignore(c => c.Location);
         characterEntity.Property("_location").
