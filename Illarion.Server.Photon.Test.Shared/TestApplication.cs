@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using Photon.SocketServer;
 using Photon.SocketServer.Rpc;
 
@@ -25,7 +26,20 @@ namespace Illarion.Server.Photon
 
     protected override void Setup()
     {
-    }
+    /*    IServiceCollection services = _serviceProviderFactory.CreateBuilder(new ServiceCollection());
+        services.AddIllarionPersistanceContext(configuration);
+        services.AddIllarionGameService();
+        services.AddIllarionNavigationService();
+
+        services.AddTransient<IInitialOperationHandler>(s => new InitialOperationHandler(s));
+        services.AddTransient<IAccountOperationHandler>(s => new AccountOperationHandler(s));
+        services.AddTransient<IPlayerOperationHandler>(s => new PlayerOperationHandler(s));
+
+        _services = _serviceProviderFactory.CreateServiceProvider(services);
+
+        SetupPhotonLogging(_services);
+        CustomTypeRegistry.RegisterCustomTypes(_services);*/
+        }
 
     protected override void TearDown()
     {

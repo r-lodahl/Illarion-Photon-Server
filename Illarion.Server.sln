@@ -58,13 +58,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{0D07FA0B-4
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Illarion.Server.Setup", "Illarion.Server.Persistence.Setup\Illarion.Server.Setup.csproj", "{88DB386D-5421-4C2F-84FC-49C2C9D2A281}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Illarion.Server.Photon.Player.Test", "Illarion.Server.Photon.Player.Test\Illarion.Server.Photon.Player.Test.csproj", "{FD79A11E-6402-4AF1-AB90-2A5B6BDD4955}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Illarion.Server.Photon.Player.Test", "Illarion.Server.Photon.Player.Test\Illarion.Server.Photon.Player.Test.csproj", "{FD79A11E-6402-4AF1-AB90-2A5B6BDD4955}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Illarion.Server.Navigation", "Illarion.Server.Navigation\Illarion.Server.Navigation.csproj", "{2E25593C-903A-44D9-8839-9538C7F91566}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{F612C936-FCE6-4D4A-98E8-561F28F6BE82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Illarion.Server.Navigation.Test", "Illarion.Server.Navigation.Test\Illarion.Server.Navigation.Test.csproj", "{07CB4D0B-E707-46F9-8FDB-7B2B7A6B6D8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Illarion.Server.Navigation.Test", "Illarion.Server.Navigation.Test\Illarion.Server.Navigation.Test.csproj", "{07CB4D0B-E707-46F9-8FDB-7B2B7A6B6D8E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Illarion.Server.Test", "Illarion.Server.Test\Illarion.Server.Test.csproj", "{5BFF7DE4-E18B-4DEC-AB7B-27A93426FFF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -164,6 +166,10 @@ Global
 		{07CB4D0B-E707-46F9-8FDB-7B2B7A6B6D8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07CB4D0B-E707-46F9-8FDB-7B2B7A6B6D8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07CB4D0B-E707-46F9-8FDB-7B2B7A6B6D8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BFF7DE4-E18B-4DEC-AB7B-27A93426FFF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BFF7DE4-E18B-4DEC-AB7B-27A93426FFF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BFF7DE4-E18B-4DEC-AB7B-27A93426FFF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BFF7DE4-E18B-4DEC-AB7B-27A93426FFF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -189,6 +195,7 @@ Global
 		{0D07FA0B-46CD-456F-B45A-C274D6498AF4} = {092273BE-E5B7-422B-8520-702DE55579FB}
 		{FD79A11E-6402-4AF1-AB90-2A5B6BDD4955} = {0D07FA0B-46CD-456F-B45A-C274D6498AF4}
 		{07CB4D0B-E707-46F9-8FDB-7B2B7A6B6D8E} = {F612C936-FCE6-4D4A-98E8-561F28F6BE82}
+		{5BFF7DE4-E18B-4DEC-AB7B-27A93426FFF2} = {F612C936-FCE6-4D4A-98E8-561F28F6BE82}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1D5C15E9-844D-400A-BC82-6F16C76FB6C8}

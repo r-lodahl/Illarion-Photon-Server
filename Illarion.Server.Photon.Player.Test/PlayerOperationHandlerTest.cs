@@ -27,7 +27,7 @@ namespace Illarion.Server.Photon
         {
             PhotonApplicationProxy applicationProxy = StartTestApplication(_output);
             var application = (TestApplication) applicationProxy.Application;
-
+            
             try
             {
                 var sendTestClient = new UnitTestClient();
