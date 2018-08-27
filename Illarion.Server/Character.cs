@@ -19,7 +19,7 @@ namespace Illarion.Server
     public ICharacterCallback Callback { get; internal set; }
     IMapSubscription IMapSubscriber.Subscription { get; set; }
 
-    public Character(Guid characterId, IWorld world)
+    internal Character(Guid characterId, IWorld world)
     {
       CharacterId = characterId;
       World = world ?? throw new ArgumentNullException(nameof(world));

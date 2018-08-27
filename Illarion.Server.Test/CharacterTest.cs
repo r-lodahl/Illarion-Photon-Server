@@ -1,24 +1,26 @@
 using System;
-using System.Collections.Generic;
 using System.Numerics;
+using System.Threading;
+using AutoFixture;
+using AutoFixture.AutoMoq;
 using AutoFixture.Xunit2;
+using Illarion.Server.Events;
 using Xunit;
 
 namespace Illarion.Server
 {
     public sealed class CharacterTest
     {
-        [Theory]
-        [MemberData(nameof(BasicPropertyTestData))]
-        [AutoMoqData]
+        [Theory, AutoMoqData]
         public void TestBasicProperties(Vector3 location, Vector3 facing, Vector3 velocity, Guid characterId,
-            IWorld world)
+            IWorld world, ICharacterCallback callback)
         {
             var character = new Character(characterId, world)
             {
                 FacingDirection = facing,
                 Location = location,
-                Velocity = velocity
+                Velocity = velocity,
+                Callback = callback
             };
 
             Assert.Equal(characterId, character.CharacterId);
@@ -26,15 +28,26 @@ namespace Illarion.Server
             Assert.Equal(velocity, character.Velocity);
             Assert.Equal(location, character.Location);
             Assert.Equal(world, character.World);
+            Assert.Equal(callback, character.Callback);
         }
 
-        public static IEnumerable<object[]> BasicPropertyTestData()
+        [Theory, AutoMoqData]
+        public void TestUpdateMovement(Vector3 location, Vector3 velocity, Vector3 facing, float deltaTime)
         {
-            yield return new object[]
-            {
-                new Vector3(float.NaN, float.NaN, float.NaN), new Vector3(float.NaN, float.NaN, float.NaN),
-                new Vector3(float.NaN, float.NaN, float.NaN), Guid.Empty, null
-            };
+            IFixture fixture = new Fixture().Customize(new AutoMoqCustomization());
+            IWorld world = fixture.Create<IWorld>();
+
+            var character = new Character(Guid.Empty, world);
+
+            var controller = (ICharacterController) character;
+            var acceptMovement = location.Equals(world.Navigator.InvestigateUpdatedLocation(character.Location, location, deltaTime));
+
+            Assert.Equal(acceptMovement, controller.UpdateMovement(location, velocity, facing, deltaTime));
+        }
+
+        [Theory, AutoMoqData]
+        public void TestChat(MapChatChannelType chatType, string text)
+        {
         }
     }
 }
