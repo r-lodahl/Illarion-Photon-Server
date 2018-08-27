@@ -5,6 +5,7 @@ using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoFixture.Xunit2;
 using Illarion.Server.Events;
+using Moq;
 using Xunit;
 
 namespace Illarion.Server
@@ -45,9 +46,35 @@ namespace Illarion.Server
             Assert.Equal(acceptMovement, controller.UpdateMovement(location, velocity, facing, deltaTime));
         }
 
-        [Theory, AutoMoqData]
+        [Fact]
+        public void TestIMapSubscription()
+        {
+            var world = new Mock<IWorld>();
+            var map = new Mock<IMap>();
+            var subscription = new Mock<IMapSubscription>();
+
+            world.SetupGet(x => x.Map).Returns(map.Object);
+            map.Setup(x => x.Subscribe(It.IsAny<IMapSubscriber>())).Returns(subscription.Object);
+
+            Assert.Equal(subscription.Object, ( (IMapSubscriber) new Character(Guid.Empty, world.Object) ).Subscription);
+        }
+
+        [Theory, AutoData]
         public void TestChat(MapChatChannelType chatType, string text)
         {
+            var raised = false;
+
+            var channel = new Mock<IEventChannel>(MockBehavior.Loose);
+            var map = new Mock<IMap>(MockBehavior.Loose);
+            var world = new Mock<IWorld>(MockBehavior.Loose);
+            world.SetupGet(x => x.Map).Returns(map.Object);
+            map.Setup(x => x.GetChatChannel(chatType)).Returns(channel.Object);
+            channel.Setup(x => x.PostEvent(It.IsAny<ChatMessageEventUpdate>())).Callback(() => { raised = true; });
+            
+            var character = new Character(Guid.Empty, world.Object);
+            ((ICharacterController)character).Chat(chatType, text);
+
+            Assert.True(raised);
         }
     }
 }
