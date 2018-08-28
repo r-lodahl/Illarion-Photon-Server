@@ -11,20 +11,16 @@ namespace Illarion.Server
   internal sealed class World : IWorld
   {
     private IImmutableSet<Character> _players;
-
-    private IServiceProvider ServiceProvider { get; }
-
+        
     public IMap Map { get; }
 
     public INavigator Navigator { get; }
 
-    internal World(IServiceProvider provider)
+    internal World(IMap map, INavigator navigator)
     {
-      ServiceProvider = provider ?? throw new ArgumentNullException(nameof(provider));
-
       _players = ImmutableHashSet.Create<Character>();
-      Map = provider.GetRequiredService<IMapFactory>().CreateMap();
-      Navigator = provider.GetRequiredService<INavigationManager>().GetNavigator(this);
+      Map = map;
+      Navigator = navigator;
     }
 
     ICharacter IWorld.CreateNewCharacter(Guid characterId, Func<ICharacter, ICharacterCallback> callbackFactory)
@@ -44,11 +40,11 @@ namespace Illarion.Server
       }
     }
 
-    void IWorld.RemoveCharacter(ICharacter player)
+    bool IWorld.RemoveCharacter(ICharacter player)
     {
       Character checkedPlayer = GetOfThisWorld(player);
 
-      ImmutableInterlocked.Update(ref _players, s => s.Remove(checkedPlayer));
+      return ImmutableInterlocked.Update(ref _players, s => s.Remove(checkedPlayer));
     }
 
     private Character GetOfThisWorld(ICharacter character)

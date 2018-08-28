@@ -30,13 +30,13 @@ namespace Illarion.Server
 
     /// <summary>
     /// Remove a character from the world. This needs to be done of the character switches worlds or in case the
-    /// character loggs out from the game.
+    /// character logs out from the game.
     /// </summary>
     /// <param name="character">The character instance that should be logged out.</param>
     /// <exception cref="ArgumentNullException"><paramref name="character"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentException">
     /// <paramref name="character"/> is not part of this <see cref="IWorld"/>.
     /// </exception>
-    void RemoveCharacter(ICharacter character);
+    bool RemoveCharacter(ICharacter character);
   }
 }

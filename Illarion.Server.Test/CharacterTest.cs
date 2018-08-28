@@ -1,6 +1,5 @@
 using System;
 using System.Numerics;
-using System.Threading;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoFixture.Xunit2;

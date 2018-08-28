@@ -14,6 +14,7 @@ namespace Illarion.Server
 
         IEventChannel IMap.GetEventChannel(MapEventChannelType channelType)
         {
+            if(!Enum.IsDefined(typeof(MapEventChannelType), channelType)) throw new ArgumentOutOfRangeException(nameof(channelType), channelType, "Illegal event channel requested!");
             if (_eventChannels.TryGetValue(channelType, out IEventChannel channel)) return channel;
             channel = new EventChannel(channelType);
             _eventChannels.Add(channelType, channel);

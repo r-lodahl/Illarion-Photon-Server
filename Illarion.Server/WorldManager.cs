@@ -6,20 +6,17 @@ namespace Illarion.Server
   internal class WorldManager : IWorldManager
   {
     private readonly ImmutableDictionary<int, World> _worlds;
-
-    private IServiceProvider ServiceProvider { get; }
-
-    private IImmutableDictionary<int, World> Worlds => _worlds;
-
+        
     public int WorldCount => _worlds.Count;
 
-    internal WorldManager(IServiceProvider provider)
+    internal WorldManager(IMapFactory mapFactory, INavigationManager navigationManager)
     {
-      ServiceProvider = provider ?? throw new ArgumentNullException(nameof(provider));
-      _worlds = ImmutableDictionary.Create<int, World>();
+        if (mapFactory == null) throw new ArgumentNullException(nameof(mapFactory));
+        if (navigationManager == null) throw new ArgumentNullException(nameof(navigationManager));
+        _worlds = ImmutableDictionary.Create<int, World>();
 
-      // TODO: For the moment we only got a single "world" with the index 0. That needs to change in future versions.
-      _worlds = _worlds.Add(0, new World(provider));
+        // TODO: For the moment we only got a single "world" with the index 0. That needs to change in future versions.
+        _worlds = _worlds.Add(0, new World(mapFactory.CreateMap(), navigationManager.GetNavigator(0)));
     }
 
     IWorld IWorldManager.GetWorld(int index)

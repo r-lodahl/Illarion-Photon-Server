@@ -6,8 +6,8 @@ namespace Illarion.Server.Navigation
 {
     internal class NavigationManager : INavigationManager
     {
-        private readonly ImmutableDictionary<IWorld, INavigator> _loadedNavigators =
-            ImmutableDictionary<IWorld, INavigator>.Empty;
+        private readonly ImmutableDictionary<int, INavigator> _loadedNavigators =
+            ImmutableDictionary<int, INavigator>.Empty;
 
         public NavigationManager(IServiceProvider provider)
         {
@@ -15,15 +15,14 @@ namespace Illarion.Server.Navigation
 
             for (var i = 0; i < worldManager.WorldCount; i++)
             {
-                IWorld world = worldManager.GetWorld(i);
-                _loadedNavigators.Add(world, new Navigator(worldManager.GetWorld(i), $"Map\\{i}_navmesh.obj"));
+                _loadedNavigators.Add(i, new Navigator(worldManager.GetWorld(i), $"Map\\{i}_navmesh.obj"));
             }
         }
 
-        public INavigator GetNavigator(IWorld world)
+        public INavigator GetNavigator(int worldIndex)
         {
-            if (_loadedNavigators.TryGetValue(world, out INavigator navigator)) return navigator;
-            throw new ArgumentOutOfRangeException(nameof(world), world, "There is no navigator available for the selected world.");
+            if (_loadedNavigators.TryGetValue(worldIndex, out INavigator navigator)) return navigator;
+            throw new ArgumentOutOfRangeException(nameof(worldIndex), worldIndex, "There is no navigator available for the selected world.");
         }
     }
 }
