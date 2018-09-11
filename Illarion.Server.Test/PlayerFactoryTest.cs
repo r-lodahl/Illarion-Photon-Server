@@ -1,4 +1,6 @@
-using xunit;
+using AutoFixture;
+using AutoFixture.AutoMoq;
+using Xunit;
 
 namespace Illarion.Server
 {
@@ -8,12 +10,12 @@ namespace Illarion.Server
         public void DefaultCharacterCreationTest()
         {
             IFixture fixture = new Fixture().Customize(new AutoMoqCustomization());
-            var playerFactory = new playerFactory();
+            var playerFactory = new PlayerFactory();
 
-            var characterCallback = playerFactory.DefaultCharacterCallback(fixture.Create<ICharacter>());
+            ICharacterCallback characterCallback = playerFactory.DefaultCharacterCallback(fixture.Create<ICharacter>());
 
             Assert.NotNull(characterCallback);
-            Assert.IsType(typeof(DefaultCharacterCallback), characterCallback);
+            Assert.IsType<DefaultCharacterCallback>(characterCallback);
         }
     }
 }

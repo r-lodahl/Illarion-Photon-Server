@@ -1,4 +1,4 @@
-using xunit;
+using Xunit;
 
 namespace Illarion.Server
 {
@@ -8,10 +8,10 @@ namespace Illarion.Server
         public void CreateSingleSectorMapTest()
         {
             var mapFactory = new MapFactory();
-            var map = mapFactory.CreateMap();
+            IMap map = ((IMapFactory)mapFactory).CreateMap();
 
             Assert.NotNull(map);
-            Assert.IsType(typeof(SingleSectorMap), map);
+            Assert.IsType<SingleSectorMap>(map);
         }
     }
 }
